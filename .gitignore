@@ -25,3 +25,6 @@ replay_pid*
 
 # Output folder
 target
+
+# IDE specific folder
+.idea
