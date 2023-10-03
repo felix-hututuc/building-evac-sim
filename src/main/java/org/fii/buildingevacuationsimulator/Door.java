@@ -3,37 +3,34 @@ package org.fii.buildingevacuationsimulator;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class Door extends DefaultWeightedEdge {
+
+    private final String uuid;
     private final Room room1;
     private final Room room2;
-    private double capacity;
+    private final double weight;
 
     private double x;
     private double y;
 
-    public Door(Room room1, Room room2, double capacity, double x, double y) {
+    public Door(Room room1, Room room2, double weight, double x, double y) {
+        this.uuid = UUID.randomUUID().toString();
         this.room1 = room1;
         this.room2 = room2;
-        this.capacity = capacity;
+        this.weight = weight;
         this.x = x;
         this.y = y;
     }
-
-    public Room getRoom1() {
+    @Override
+    public Room getSource() {
         return room1;
     }
 
-    public Room getRoom2() {
+    @Override
+    public Room getTarget() {
         return room2;
-    }
-
-    public double getCapacity() {
-        return capacity;
-    }
-
-    public void setCapacity(double capacity) {
-        this.capacity = capacity;
     }
 
     public double getX() {
@@ -54,7 +51,7 @@ public class Door extends DefaultWeightedEdge {
 
     @Override
     public double getWeight() {
-        return capacity;
+        return weight;
     }
 
     @Override
@@ -62,11 +59,11 @@ public class Door extends DefaultWeightedEdge {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Door door = (Door) o;
-        return Double.compare(door.capacity, capacity) == 0 && room1.equals(door.room1) && room2.equals(door.room2);
+        return uuid.equals(door.uuid) && Double.compare(door.weight, weight) == 0;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(room1, room2, capacity);
+        return Objects.hash(uuid, weight);
     }
 }

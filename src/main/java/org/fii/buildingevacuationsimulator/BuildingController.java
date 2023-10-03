@@ -4,21 +4,15 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
 import org.jgrapht.Graph;
-import org.jgrapht.graph.SimpleDirectedWeightedGraph;
+import org.jgrapht.alg.flow.EdmondsKarpMFImpl;
+import org.jgrapht.alg.interfaces.MaximumFlowAlgorithm;
+import org.jgrapht.graph.DirectedWeightedMultigraph;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class BuildingController {
 //    @FXML
@@ -28,15 +22,28 @@ public class BuildingController {
 
     private Canvas canvas;
     private double mouseX, mouseY;
-    private final Set<Room> rooms = new HashSet<>();
-    Graph<Room, Door> flowNetwork =
-            new SimpleDirectedWeightedGraph<>(Door.class);
+    private final List<Room> rooms = new ArrayList<>();
+    Graph<Room, Door> flowNetwork;
+    private Room source;
+    private final Room sink;
 
 
 //    @FXML
 //    private void handleCanvasClick() {
 //        canvas.setOnMouseClicked(canvasClickResize());
 //    }
+
+    public BuildingController() {
+        flowNetwork = new DirectedWeightedMultigraph<>(Door.class);
+
+        sink = new Room(0,0,0,0);
+        flowNetwork.addVertex(sink);   // sink
+        rooms.add(sink);
+
+        Room first_room = new Room(300, 100, 600, 600);
+        rooms.add(first_room);
+        flowNetwork.addVertex(first_room);
+    }
 
     public EventHandler<MouseEvent> canvasClickResize() {
         return event -> {
@@ -64,6 +71,9 @@ public class BuildingController {
                     room.setDraggingDown(true);
                 }
             }
+            System.out.println("Number of rooms= " + rooms.size());
+            System.out.println("Number of doors=" + flowNetwork.edgeSet().size());
+            System.out.println(flowNetwork);
         };
     }
 
@@ -164,6 +174,12 @@ public class BuildingController {
                     rooms.remove(room);
                     rooms.add(newRoom1);
                     rooms.add(newRoom2);
+                    flowNetwork.addVertex(newRoom1);
+                    flowNetwork.addVertex(newRoom2);
+                    flowNetwork.removeVertex(room);
+                    for (var door : room.getDoors()) {
+                        flowNetwork.removeEdge(door);
+                    }
                     break;
                 }
             }
@@ -210,6 +226,12 @@ public class BuildingController {
                     rooms.remove(room);
                     rooms.add(newRoom1);
                     rooms.add(newRoom2);
+                    flowNetwork.addVertex(newRoom1);
+                    flowNetwork.addVertex(newRoom2);
+                    flowNetwork.removeVertex(room);
+                    for (var door : room.getDoors()) {
+                        flowNetwork.removeEdge(door);
+                    }
                     break;
                 }
             }
@@ -244,16 +266,39 @@ public class BuildingController {
                                 result = Optional.of("0");
                             }
                             double[] nearestEdge = room.getNearestEdge(x, y);
-                            Door door = new Door(room, neighbour, Double.parseDouble(result.get()), nearestEdge[0], nearestEdge[1]);
-                            room.addDoor(door);
-                            neighbour.addDoor(door);
-                            break;
+                            Door door1 = new Door(room, neighbour, Double.parseDouble(result.get()), nearestEdge[0], nearestEdge[1]);
+                            Door door2 = new Door(neighbour, room, Double.parseDouble(result.get()), nearestEdge[0], nearestEdge[1]);
+
+                            room.addDoor(door1);
+                            neighbour.addDoor(door1);
+                            room.addDoor(door2);
+                            neighbour.addDoor(door2);
+                            flowNetwork.addEdge(room, neighbour, door1);
+                            flowNetwork.addEdge(neighbour, room, door2);
+
+                            draw(gc);
+                            return;
                         }
                     }
-                    break;
+                    // add door to sink
+                    System.out.println("Adding door to sink");
+                    TextInputDialog dialog = new TextInputDialog();
+                    dialog.setTitle("Input");
+                    dialog.setHeaderText("Input door capacity");
+                    Optional<String> result = dialog.showAndWait();
+                    if (result.isEmpty() || result.get().isEmpty()) {
+                        result = Optional.of("0");
+                    }
+                    double[] nearestEdge = room.getNearestEdge(x, y);
+                    Door door = new Door(room, sink, Double.parseDouble(result.get()), nearestEdge[0], nearestEdge[1]);
+                    room.addDoor(door);
+                    sink.addDoor(door);
+                    flowNetwork.addEdge(room, sink, door);
+
+                    draw(gc);
+                    return;
                 }
             }
-            draw(gc);
         };
     }
 
@@ -268,10 +313,47 @@ public class BuildingController {
         };
     }
 
+    // select source node and return it by clicking on it
+    public EventHandler<MouseEvent> sourceClickCanvasHandle() {
+        return event -> {
+            var x = event.getX();
+            var y = event.getY();
+            for (var room : rooms) {
+                if (room.isInside(x, y)) {
+                    source = room;
+                    System.out.println("Source room: " + rooms.indexOf(room));
+                    break;
+                }
+            }
+        };
+    }
+
+    public EventHandler<ActionEvent> sourceButtonHandle(GraphicsContext gc) {
+        return event -> {
+            canvas.setOnMousePressed(sourceClickCanvasHandle());
+            canvas.setOnMouseReleased(event1 -> {
+                canvas.setOnMousePressed(canvasClickResize());
+                canvas.setOnMouseReleased(canvasClickRelease());
+                canvas.setOnMouseDragged(canvasDragResize(gc));
+            });
+        };
+    }
+
+    public EventHandler<ActionEvent> maxFlowHandle() {
+        return event -> {
+            MaximumFlowAlgorithm<Room, Door> algorithm = new EdmondsKarpMFImpl<>(flowNetwork);
+            double maxFlow = algorithm.getMaximumFlowValue(source, sink);
+            System.out.println(maxFlow);
+        };
+    }
+
     public void draw(GraphicsContext gc) {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         for (var room : rooms) {
             drawRoom(gc, room);
+            // draw room index
+            gc.setFill(Color.RED);
+            gc.fillText(String.valueOf(rooms.indexOf(room)), room.getX() + room.getWidth() / 2, room.getY() + room.getHeight() / 2);
         }
     }
 
@@ -285,17 +367,33 @@ public class BuildingController {
     public void drawDoor(GraphicsContext gc, Door door) {
         gc.setFill(Color.BLACK);
         gc.fillOval(door.getX() - 5, door.getY() - 5, 10, 10);
+        // draw capacity
+        gc.setFill(Color.RED);
+        gc.fillText(String.valueOf(door.getWeight()), door.getX() - 10, door.getY() - 5);
     }
 
     public void addRoom(Room room) {
         rooms.add(room);
     }
 
-    public Set<Room> getRooms() {
+    public List<Room> getRooms() {
         return rooms;
     }
 
     public void setCanvas(Canvas canvas) {
         this.canvas = canvas;
+    }
+
+    public void printEdges() {
+        for (Room room : flowNetwork.vertexSet()) {
+            System.out.println("Room " + rooms.indexOf(room) + " has edges:");
+            for (Door door : flowNetwork.edgesOf(room)) {
+                System.out.println("\tDoor " + rooms.indexOf(flowNetwork.getEdgeSource(door)) + " -> " + rooms.indexOf(flowNetwork.getEdgeTarget(door)) + " with capacity " + door.getWeight());
+            }
+        }
+    }
+
+    public EventHandler<ActionEvent> showGraphHandle() {
+        return event -> printEdges();
     }
 }

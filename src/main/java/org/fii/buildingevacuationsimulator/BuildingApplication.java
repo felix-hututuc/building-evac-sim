@@ -15,8 +15,7 @@ public class BuildingApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        buildingController.addRoom(new Room(300, 100, 600, 600));
-
+        primaryStage.setTitle("Building Evacuation Simulator");
         Canvas canvas = new Canvas(1200, 800);
         buildingController.setCanvas(canvas);
         GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -42,6 +41,18 @@ public class BuildingApplication extends Application {
         Button doorButton = new Button("Door");
         doorButton.setOnAction(buildingController.doorButtonHandle(gc));
         toolBar.getItems().add(doorButton);
+
+        Button sourceButton = new Button("Select Source");
+        sourceButton.setOnAction(buildingController.sourceButtonHandle(gc));
+        toolBar.getItems().add(sourceButton);
+
+        Button maxFlowButton = new Button("Max Flow");
+        maxFlowButton.setOnAction(buildingController.maxFlowHandle());
+        toolBar.getItems().add(maxFlowButton);
+
+        Button showGraphButton = new Button("Show Graph");
+        showGraphButton.setOnAction(buildingController.showGraphHandle());
+        toolBar.getItems().add(showGraphButton);
 
         BorderPane root = new BorderPane();
         root.setCenter(canvas);
