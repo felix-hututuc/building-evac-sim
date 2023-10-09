@@ -10,7 +10,9 @@ import javafx.scene.paint.Color;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.flow.EdmondsKarpMFImpl;
 import org.jgrapht.alg.interfaces.MaximumFlowAlgorithm;
+import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.DirectedWeightedMultigraph;
+import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
 import java.util.*;
 
@@ -34,7 +36,7 @@ public class BuildingController {
 //    }
 
     public BuildingController() {
-        flowNetwork = new DirectedWeightedMultigraph<>(Door.class);
+        flowNetwork = new SimpleDirectedWeightedGraph<>(Door.class);
 
         sink = new Room(0,0,0,0);
         flowNetwork.addVertex(sink);   // sink
@@ -73,7 +75,6 @@ public class BuildingController {
             }
             System.out.println("Number of rooms= " + rooms.size());
             System.out.println("Number of doors=" + flowNetwork.edgeSet().size());
-            System.out.println(flowNetwork);
         };
     }
 
@@ -266,15 +267,22 @@ public class BuildingController {
                                 result = Optional.of("0");
                             }
                             double[] nearestEdge = room.getNearestEdge(x, y);
+
+                            if (rooms.indexOf(room) > rooms.indexOf(neighbour)) {
+                                Room temp = room;
+                                room = neighbour;
+                                neighbour = temp;
+                            }
                             Door door1 = new Door(room, neighbour, Double.parseDouble(result.get()), nearestEdge[0], nearestEdge[1]);
-                            Door door2 = new Door(neighbour, room, Double.parseDouble(result.get()), nearestEdge[0], nearestEdge[1]);
+//                            Door door2 = new Door(neighbour, room, Double.parseDouble(result.get()), nearestEdge[0], nearestEdge[1]);
 
                             room.addDoor(door1);
                             neighbour.addDoor(door1);
-                            room.addDoor(door2);
-                            neighbour.addDoor(door2);
+//                            room.addDoor(door2);
+//                            neighbour.addDoor(door2);
                             flowNetwork.addEdge(room, neighbour, door1);
-                            flowNetwork.addEdge(neighbour, room, door2);
+                            flowNetwork.setEdgeWeight(door1, Double.parseDouble(result.get()));
+//                            flowNetwork.addEdge(neighbour, room, door2);
 
                             draw(gc);
                             return;
@@ -294,6 +302,7 @@ public class BuildingController {
                     room.addDoor(door);
                     sink.addDoor(door);
                     flowNetwork.addEdge(room, sink, door);
+                    flowNetwork.setEdgeWeight(door, Double.parseDouble(result.get()));
 
                     draw(gc);
                     return;
@@ -342,8 +351,33 @@ public class BuildingController {
     public EventHandler<ActionEvent> maxFlowHandle() {
         return event -> {
             MaximumFlowAlgorithm<Room, Door> algorithm = new EdmondsKarpMFImpl<>(flowNetwork);
-            double maxFlow = algorithm.getMaximumFlowValue(source, sink);
+            double maxFlow = algorithm.getMaximumFlow(source, sink).getValue();
             System.out.println(maxFlow);
+
+//            Graph<Object, DefaultWeightedEdge> tempGraph = new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
+//            for (int i = 0; i < 5; i++) {
+//                tempGraph.addVertex(i);
+//            }
+//            DefaultWeightedEdge edge = tempGraph.addEdge(0, 2);
+//            tempGraph.setEdgeWeight(edge, 99);
+//            edge = tempGraph.addEdge(0, 3);
+//            tempGraph.setEdgeWeight(edge, 3);
+//            edge = tempGraph.addEdge(2, 3);
+//            tempGraph.setEdgeWeight(edge, 2);
+//            edge = tempGraph.addEdge(2, 1);
+//            tempGraph.setEdgeWeight(edge, 3);
+//            edge = tempGraph.addEdge(3, 1);
+//            tempGraph.setEdgeWeight(edge, 6);
+//            edge = tempGraph.addEdge(2, 4);
+//            tempGraph.setEdgeWeight(edge, 3);
+//            edge = tempGraph.addEdge(1, 4);
+//            tempGraph.setEdgeWeight(edge, 99);
+//
+//
+//            MaximumFlowAlgorithm<Object, DefaultWeightedEdge> algorithm = new EdmondsKarpMFImpl<>(tempGraph);
+//            double maxFlow = algorithm.getMaximumFlow(0, 4).getValue();
+//            System.out.println(maxFlow);
+
         };
     }
 
