@@ -37,7 +37,7 @@ public class BuildingController {
 //    }
 
     public BuildingController() {
-        flowNetwork = new SimpleDirectedWeightedGraph<>(Door.class);
+        flowNetwork = new DirectedWeightedMultigraph<>(Door.class);
 
         sink = new Room(0,0,0,0);
         flowNetwork.addVertex(sink);   // sink
@@ -285,21 +285,22 @@ public class BuildingController {
                             }
                             double[] nearestEdge = room.getNearestEdge(x, y);
 
-                            if (rooms.indexOf(room) > rooms.indexOf(neighbour)) {
-                                Room temp = room;
-                                room = neighbour;
-                                neighbour = temp;
-                            }
+//                            if (rooms.indexOf(room) > rooms.indexOf(neighbour)) {
+//                                Room temp = room;
+//                                room = neighbour;
+//                                neighbour = temp;
+//                            }
                             Door door1 = new Door(room, neighbour, Double.parseDouble(result.get()), nearestEdge[0], nearestEdge[1]);
-//                            Door door2 = new Door(neighbour, room, Double.parseDouble(result.get()), nearestEdge[0], nearestEdge[1]);
+                            Door door2 = new Door(neighbour, room, Double.parseDouble(result.get()), nearestEdge[0], nearestEdge[1]);
 
                             room.addDoor(door1);
                             neighbour.addDoor(door1);
-//                            room.addDoor(door2);
-//                            neighbour.addDoor(door2);
+                            room.addDoor(door2);
+                            neighbour.addDoor(door2);
                             flowNetwork.addEdge(room, neighbour, door1);
                             flowNetwork.setEdgeWeight(door1, Double.parseDouble(result.get()));
-//                            flowNetwork.addEdge(neighbour, room, door2);
+                            flowNetwork.addEdge(neighbour, room, door2);
+                            flowNetwork.setEdgeWeight(door2, Double.parseDouble(result.get()));
 
                             draw(gc);
                             return;
@@ -367,6 +368,10 @@ public class BuildingController {
 
     public EventHandler<ActionEvent> maxFlowHandle() {
         return event -> {
+            if (source == null) {
+                System.out.println("Source not selected");
+                return;
+            }
             MaximumFlowAlgorithm<Room, Door> algorithm = new EdmondsKarpMFImpl<>(flowNetwork);
             double maxFlow = algorithm.getMaximumFlow(source, sink).getValue();
             System.out.println(maxFlow);
