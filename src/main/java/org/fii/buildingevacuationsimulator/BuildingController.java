@@ -1,5 +1,6 @@
 package org.fii.buildingevacuationsimulator;
 
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
@@ -59,18 +60,34 @@ public class BuildingController {
                 if (mouseX >= rectX + rectWidth - 5 && mouseX <= rectX + rectWidth + 5
                         && mouseY >= rectY && mouseY <= rectY + rectHeight) {
                     room.setDraggingRight(true);
+                    for (Room neighbour : room.getNeighbours()) {
+                        if (neighbour.getX() >= mouseX - 5 && neighbour.getX() <= mouseX + 5)
+                            neighbour.setDraggingLeft(true);
+                    }
                 }
                 if (mouseX >= rectX - 5 && mouseX <= rectX + 5
                         && mouseY >= rectY && mouseY <= rectY + rectHeight) {
                     room.setDraggingLeft(true);
+                    for (Room neighbour : room.getNeighbours()) {
+                        if (neighbour.getX() + neighbour.getWidth() >= mouseX - 5 && neighbour.getX() + neighbour.getWidth() <= mouseX + 5)
+                            neighbour.setDraggingRight(true);
+                    }
                 }
                 if (mouseX >= rectX && mouseX <= rectX + rectWidth
                         && mouseY >= rectY - 5 && mouseY <= rectY + 5) {
                     room.setDraggingUp(true);
+                    for (Room neighbour : room.getNeighbours()) {
+                        if (neighbour.getY() + neighbour.getHeight() >= mouseY - 5 && neighbour.getY() + neighbour.getHeight() <= mouseY + 5)
+                            neighbour.setDraggingDown(true);
+                    }
                 }
                 if (mouseX >= rectX && mouseX <= rectX + rectWidth
                         && mouseY >= rectY + rectHeight - 5 && mouseY <= rectY + rectHeight + 5) {
                     room.setDraggingDown(true);
+                    for (Room neighbour : room.getNeighbours()) {
+                        if (neighbour.getY() >= mouseY - 5 && neighbour.getY() <= mouseY + 5)
+                            neighbour.setDraggingUp(true);
+                    }
                 }
             }
             System.out.println("Number of rooms= " + rooms.size());
