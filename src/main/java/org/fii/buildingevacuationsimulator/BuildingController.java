@@ -38,15 +38,15 @@ public class BuildingController {
         flowNetwork.addVertex(sink);
 //        rooms.add(sink);
 
-        currentFloor = new Floor(this, new Canvas(1200, 800));
+        currentFloor = new Floor(new Canvas(1200, 800));
+        Room first_room = new Room(300, 100, 600, 600);
+        currentFloor.addRoom(first_room);
+        flowNetwork.addVertex(first_room);
+
         floors.add(currentFloor);
         this.getCanvas().setOnMousePressed(canvasClickResize());
         this.getCanvas().setOnMouseReleased(canvasClickRelease());
         this.getCanvas().setOnMouseDragged(canvasDragResize());
-    }
-
-    public void addVertex(Room room) {
-        flowNetwork.addVertex(room);
     }
 
     public Canvas getCanvas() {
@@ -410,7 +410,12 @@ public class BuildingController {
 
     public EventHandler<ActionEvent> newFloorHandle(BorderPane root) {
         return event -> {
-            currentFloor = new Floor(this, new Canvas(1200, 800));
+            currentFloor = new Floor(new Canvas(1200, 800));
+
+            Room first_room = new Room(300, 100, 600, 600);
+            currentFloor.addRoom(first_room);
+            flowNetwork.addVertex(first_room);
+
             floors.add(currentFloor);
             this.getCanvas().setOnMousePressed(canvasClickResize());
             this.getCanvas().setOnMouseReleased(canvasClickRelease());
