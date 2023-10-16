@@ -10,16 +10,16 @@ public class Door extends DefaultWeightedEdge {
     private final String uuid;
     private final Room room1;
     private final Room room2;
-    private final double weight;
+    private final double capacity;
 
     private double x;
     private double y;
 
-    public Door(Room room1, Room room2, double weight, double x, double y) {
+    public Door(Room room1, Room room2, double capacity, double x, double y) {
         this.uuid = UUID.randomUUID().toString();
         this.room1 = room1;
         this.room2 = room2;
-        this.weight = weight;
+        this.capacity = capacity;
         this.x = x;
         this.y = y;
     }
@@ -51,7 +51,7 @@ public class Door extends DefaultWeightedEdge {
 
     @Override
     public double getWeight() {
-        return weight;
+        return capacity;
     }
 
     @Override
@@ -59,11 +59,11 @@ public class Door extends DefaultWeightedEdge {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Door door = (Door) o;
-        return uuid.equals(door.uuid) && Double.compare(door.weight, weight) == 0;
+        return uuid.equals(door.uuid) && Double.compare(door.capacity, capacity) == 0;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(uuid, weight);
+        return Objects.hash(uuid, capacity);
     }
 }

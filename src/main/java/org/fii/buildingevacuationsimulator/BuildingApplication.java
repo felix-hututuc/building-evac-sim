@@ -2,12 +2,9 @@ package org.fii.buildingevacuationsimulator;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class BuildingApplication extends Application {
@@ -16,18 +13,9 @@ public class BuildingApplication extends Application {
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Building Evacuation Simulator");
-//        Canvas canvas = new Canvas(1200, 800);
-//        buildingController.setCanvas(canvas);
-//        GraphicsContext gc = buildingController.getCanvas().getGraphicsContext2D();
-//        gc.setStroke(Color.BLACK);
 
         buildingController.draw();
 
-//        buildingController.getCanvas().setOnMousePressed(buildingController.canvasClickResize());
-//
-//        buildingController.getCanvas().setOnMouseReleased(buildingController.canvasClickRelease());
-//
-//        buildingController.getCanvas().setOnMouseDragged(buildingController.canvasDragResize());
         BorderPane root = new BorderPane();
 
         ToolBar toolBar = new ToolBar();

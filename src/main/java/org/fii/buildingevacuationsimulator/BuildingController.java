@@ -1,6 +1,5 @@
 package org.fii.buildingevacuationsimulator;
 
-import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
@@ -12,18 +11,13 @@ import javafx.scene.paint.Color;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.flow.EdmondsKarpMFImpl;
 import org.jgrapht.alg.interfaces.MaximumFlowAlgorithm;
-import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.DirectedWeightedMultigraph;
-import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
 import java.util.*;
 
 public class BuildingController {
-
-//    private Canvas canvas;
-
-    private double mouseX, mouseY;
-//    private final List<Room> rooms = new ArrayList<>();
+    private double mouseX;
+    private double mouseY;
     Graph<Room, Door> flowNetwork;
     private Room source;
     private final Room sink;
@@ -36,12 +30,11 @@ public class BuildingController {
 
         sink = new Room(0,0,0,0);
         flowNetwork.addVertex(sink);
-//        rooms.add(sink);
 
         currentFloor = new Floor(new Canvas(1200, 800));
-        Room first_room = new Room(300, 100, 600, 600);
-        currentFloor.addRoom(first_room);
-        flowNetwork.addVertex(first_room);
+        Room firstRoom = new Room(300, 100, 600, 600);
+        currentFloor.addRoom(firstRoom);
+        flowNetwork.addVertex(firstRoom);
 
         floors.add(currentFloor);
         this.getCanvas().setOnMousePressed(canvasClickResize());
@@ -290,11 +283,6 @@ public class BuildingController {
                             }
                             double[] nearestEdge = room.getNearestEdge(x, y);
 
-//                            if (rooms.indexOf(room) > rooms.indexOf(neighbour)) {
-//                                Room temp = room;
-//                                room = neighbour;
-//                                neighbour = temp;
-//                            }
                             Door door1 = new Door(room, neighbour, Double.parseDouble(result.get()), nearestEdge[0], nearestEdge[1]);
                             Door door2 = new Door(neighbour, room, Double.parseDouble(result.get()), nearestEdge[0], nearestEdge[1]);
 
@@ -412,9 +400,9 @@ public class BuildingController {
         return event -> {
             currentFloor = new Floor(new Canvas(1200, 800));
 
-            Room first_room = new Room(300, 100, 600, 600);
-            currentFloor.addRoom(first_room);
-            flowNetwork.addVertex(first_room);
+            Room firstRoom = new Room(300, 100, 600, 600);
+            currentFloor.addRoom(firstRoom);
+            flowNetwork.addVertex(firstRoom);
 
             floors.add(currentFloor);
             this.getCanvas().setOnMousePressed(canvasClickResize());
@@ -427,7 +415,7 @@ public class BuildingController {
 
     public EventHandler<ActionEvent> previousFloorHandle(BorderPane root) {
         return event -> {
-            if (floors.indexOf(currentFloor) > 0) {
+            if (floors.indexOf(currentFloor) >= 1) {
                 currentFloor = floors.get(floors.indexOf(currentFloor) - 1);
                 draw();
                 root.setCenter(currentFloor.getCanvas());
@@ -444,18 +432,6 @@ public class BuildingController {
             }
         };
     }
-
-//    public void addRoom(Room room) {
-//        rooms.add(room);
-//    }
-
-//    public List<Room> getRooms() {
-//        return rooms;
-//    }
-
-//    public void setCanvas(Canvas canvas) {
-//        this.canvas = canvas;
-//    }
 
     public void printEdges() {
         for (Room room : flowNetwork.vertexSet()) {

@@ -143,6 +143,7 @@ public class Room {
                 nearestEdge[0] = this.x + this.width;
                 nearestEdge[1] = y;
             }
+            default -> throw new IllegalStateException("Unexpected value: " + index);
         }
         return nearestEdge;
     }
