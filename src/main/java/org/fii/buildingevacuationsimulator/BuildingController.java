@@ -7,6 +7,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.flow.EdmondsKarpMFImpl;
@@ -18,41 +19,45 @@ import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 import java.util.*;
 
 public class BuildingController {
-//    @FXML
-//    private AnchorPane rootPane;
-//    @FXML
+
 //    private Canvas canvas;
 
-    private Canvas canvas;
     private double mouseX, mouseY;
-    private final List<Room> rooms = new ArrayList<>();
+//    private final List<Room> rooms = new ArrayList<>();
     Graph<Room, Door> flowNetwork;
     private Room source;
     private final Room sink;
 
-
-//    @FXML
-//    private void handleCanvasClick() {
-//        canvas.setOnMouseClicked(canvasClickResize());
-//    }
+    private final List<Floor> floors = new ArrayList<>();
+    private Floor currentFloor;
 
     public BuildingController() {
         flowNetwork = new DirectedWeightedMultigraph<>(Door.class);
 
         sink = new Room(0,0,0,0);
-        flowNetwork.addVertex(sink);   // sink
-        rooms.add(sink);
+        flowNetwork.addVertex(sink);
+//        rooms.add(sink);
 
-        Room first_room = new Room(300, 100, 600, 600);
-        rooms.add(first_room);
-        flowNetwork.addVertex(first_room);
+        currentFloor = new Floor(this, new Canvas(1200, 800));
+        floors.add(currentFloor);
+        this.getCanvas().setOnMousePressed(canvasClickResize());
+        this.getCanvas().setOnMouseReleased(canvasClickRelease());
+        this.getCanvas().setOnMouseDragged(canvasDragResize());
+    }
+
+    public void addVertex(Room room) {
+        flowNetwork.addVertex(room);
+    }
+
+    public Canvas getCanvas() {
+        return currentFloor.getCanvas();
     }
 
     public EventHandler<MouseEvent> canvasClickResize() {
         return event -> {
             mouseX = event.getX();
             mouseY = event.getY();
-            for (var room : rooms) {
+            for (var room : currentFloor.getRooms()) {
                 var rectX = room.getX();
                 var rectY = room.getY();
                 var rectWidth = room.getWidth();
@@ -90,16 +95,16 @@ public class BuildingController {
                     }
                 }
             }
-            System.out.println("Number of rooms= " + rooms.size());
-            System.out.println("Number of doors=" + flowNetwork.edgeSet().size());
+            System.out.println("Number of rooms= " + currentFloor.getRooms().size());
+            System.out.println("Number of doors= " + ((flowNetwork.edgeSet().size() + sink.getDoors().size()) / 2));
         };
     }
 
-    public EventHandler<MouseEvent> canvasDragResize(GraphicsContext gc) {
+    public EventHandler<MouseEvent> canvasDragResize() {
         return event -> {
-            for (var room : rooms) {
+            for (var room : currentFloor.getRooms()) {
                 if (room.isDraggingRight()) {
-                    if (event.getX() > 0 && event.getX() < canvas.getWidth()) {
+                    if (event.getX() > 0 && event.getX() < currentFloor.getCanvas().getWidth()) {
                         for (var door : room.getDoors()) {
                             if (door.getX() == room.getX() + room.getWidth()) {
                                 door.setX(room.getX() + event.getX() - room.getX());
@@ -109,7 +114,7 @@ public class BuildingController {
                     }
                 }
                 if (room.isDraggingLeft()) {
-                    if (event.getX() > 0 && event.getX() < canvas.getWidth()) {
+                    if (event.getX() > 0 && event.getX() < currentFloor.getCanvas().getWidth()) {
                         for (var door : room.getDoors()) {
                             if (door.getX() == room.getX()) {
                                 door.setX(event.getX());
@@ -119,12 +124,12 @@ public class BuildingController {
                         room.setX(event.getX());
                     } else if (event.getX() <= 0) {
                         room.setX(0);
-                    } else if (event.getX() >= canvas.getWidth()) {
-                        room.setX(canvas.getWidth());
+                    } else if (event.getX() >= currentFloor.getCanvas().getWidth()) {
+                        room.setX(currentFloor.getCanvas().getWidth());
                     }
                 }
                 if (room.isDraggingUp()) {
-                    if (event.getY() > 0 && event.getY() < canvas.getHeight()) {
+                    if (event.getY() > 0 && event.getY() < currentFloor.getCanvas().getHeight()) {
                         for (var door : room.getDoors()) {
                             if (door.getY() == room.getY()) {
                                 door.setY(event.getY());
@@ -134,12 +139,12 @@ public class BuildingController {
                         room.setY(event.getY());
                     } else if (event.getY() <= 0) {
                         room.setY(0);
-                    } else if (event.getY() >= canvas.getHeight()) {
-                        room.setY(canvas.getHeight());
+                    } else if (event.getY() >= currentFloor.getCanvas().getHeight()) {
+                        room.setY(currentFloor.getCanvas().getHeight());
                     }
                 }
                 if (room.isDraggingDown()) {
-                    if (event.getY() > 0 && event.getY() < canvas.getHeight()) {
+                    if (event.getY() > 0 && event.getY() < currentFloor.getCanvas().getHeight()) {
                         for (var door : room.getDoors()) {
                             if (door.getY() == room.getY() + room.getHeight()) {
                                 door.setY(room.getY() + event.getY() - room.getY());
@@ -149,13 +154,13 @@ public class BuildingController {
                     }
                 }
             }
-            draw(gc);
+            draw();
         };
     }
 
     public EventHandler<MouseEvent> canvasClickRelease() {
         return event -> {
-            for (var room : rooms) {
+            for (var room : currentFloor.getRooms()) {
                 room.setDraggingRight(false);
                 room.setDraggingLeft(false);
                 room.setDraggingUp(false);
@@ -164,11 +169,11 @@ public class BuildingController {
         };
     }
 
-    public EventHandler<MouseEvent> verticalClickCanvasHandle(GraphicsContext gc) {
+    public EventHandler<MouseEvent> verticalClickCanvasHandle() {
         return event -> {
             var x = event.getX();
             var y = event.getY();
-            for (var room : rooms) {
+            for (var room : currentFloor.getRooms()) {
                 if (room.isInside(x, y)) {
                     Room newRoom1 = new Room(room.getX(), room.getY(), x - room.getX(), room.getHeight());
                     Room newRoom2 = new Room(x, room.getY(), room.getWidth() - (x - room.getX()), room.getHeight());
@@ -189,9 +194,9 @@ public class BuildingController {
                     }
                     newRoom1.addNeighbour(newRoom2);
                     newRoom2.addNeighbour(newRoom1);
-                    rooms.remove(room);
-                    rooms.add(newRoom1);
-                    rooms.add(newRoom2);
+                    currentFloor.removeRoom(room);
+                    currentFloor.addRoom(newRoom1);
+                    currentFloor.addRoom(newRoom2);
                     flowNetwork.addVertex(newRoom1);
                     flowNetwork.addVertex(newRoom2);
                     flowNetwork.removeVertex(room);
@@ -201,26 +206,26 @@ public class BuildingController {
                     break;
                 }
             }
-            draw(gc);
+            draw();
         };
     }
 
-    public EventHandler<ActionEvent> verticalButtonHandle(GraphicsContext gc) {
+    public EventHandler<ActionEvent> verticalButtonHandle() {
         return event -> {
-            canvas.setOnMousePressed(verticalClickCanvasHandle(gc));
-            canvas.setOnMouseReleased(event1 -> {
-                canvas.setOnMousePressed(canvasClickResize());
-                canvas.setOnMouseReleased(canvasClickRelease());
-                canvas.setOnMouseDragged(canvasDragResize(gc));
+            currentFloor.getCanvas().setOnMousePressed(verticalClickCanvasHandle());
+            currentFloor.getCanvas().setOnMouseReleased(event1 -> {
+                currentFloor.getCanvas().setOnMousePressed(canvasClickResize());
+                currentFloor.getCanvas().setOnMouseReleased(canvasClickRelease());
+                currentFloor.getCanvas().setOnMouseDragged(canvasDragResize());
             });
         };
     }
 
-    public EventHandler<MouseEvent> horizontalClickCanvasHandle(GraphicsContext gc) {
+    public EventHandler<MouseEvent> horizontalClickCanvasHandle() {
         return event -> {
             var x = event.getX();
             var y = event.getY();
-            for (var room : rooms) {
+            for (var room : currentFloor.getRooms()) {
                 if (room.isInside(x, y)) {
                     Room newRoom1 = new Room(room.getX(), room.getY(), room.getWidth(), y - room.getY());
                     Room newRoom2 = new Room(room.getX(), y, room.getWidth(), room.getHeight() - (y - room.getY()));
@@ -241,9 +246,9 @@ public class BuildingController {
                     }
                     newRoom1.addNeighbour(newRoom2);
                     newRoom2.addNeighbour(newRoom1);
-                    rooms.remove(room);
-                    rooms.add(newRoom1);
-                    rooms.add(newRoom2);
+                    currentFloor.removeRoom(room);
+                    currentFloor.addRoom(newRoom1);
+                    currentFloor.addRoom(newRoom2);
                     flowNetwork.addVertex(newRoom1);
                     flowNetwork.addVertex(newRoom2);
                     flowNetwork.removeVertex(room);
@@ -253,26 +258,26 @@ public class BuildingController {
                     break;
                 }
             }
-            draw(gc);
+            draw();
         };
     }
 
-    public EventHandler<ActionEvent> horizontalButtonHandle(GraphicsContext gc) {
+    public EventHandler<ActionEvent> horizontalButtonHandle() {
         return event -> {
-            canvas.setOnMousePressed(horizontalClickCanvasHandle(gc));
-            canvas.setOnMouseReleased(event1 -> {
-                canvas.setOnMousePressed(canvasClickResize());
-                canvas.setOnMouseReleased(canvasClickRelease());
-                canvas.setOnMouseDragged(canvasDragResize(gc));
+            currentFloor.getCanvas().setOnMousePressed(horizontalClickCanvasHandle());
+            currentFloor.getCanvas().setOnMouseReleased(event1 -> {
+                currentFloor.getCanvas().setOnMousePressed(canvasClickResize());
+                currentFloor.getCanvas().setOnMouseReleased(canvasClickRelease());
+                currentFloor.getCanvas().setOnMouseDragged(canvasDragResize());
             });
         };
     }
 
-    public EventHandler<MouseEvent> doorClickCanvasHandle(GraphicsContext gc) {
+    public EventHandler<MouseEvent> doorClickCanvasHandle() {
         return event -> {
             var x = event.getX();
             var y = event.getY();
-            for (var room : rooms) {
+            for (var room : currentFloor.getRooms()) {
                 if (room.isOnEdge(x, y)) {
                     for (var neighbour : room.getNeighbours()) {
                         if (neighbour.isOnEdge(x, y)) {
@@ -302,7 +307,7 @@ public class BuildingController {
                             flowNetwork.addEdge(neighbour, room, door2);
                             flowNetwork.setEdgeWeight(door2, Double.parseDouble(result.get()));
 
-                            draw(gc);
+                            draw();
                             return;
                         }
                     }
@@ -322,20 +327,20 @@ public class BuildingController {
                     flowNetwork.addEdge(room, sink, door);
                     flowNetwork.setEdgeWeight(door, Double.parseDouble(result.get()));
 
-                    draw(gc);
+                    draw();
                     return;
                 }
             }
         };
     }
 
-    public EventHandler<ActionEvent> doorButtonHandle(GraphicsContext gc) {
+    public EventHandler<ActionEvent> doorButtonHandle() {
         return event -> {
-            canvas.setOnMousePressed(doorClickCanvasHandle(gc));
-            canvas.setOnMouseReleased(event1 -> {
-                canvas.setOnMousePressed(canvasClickResize());
-                canvas.setOnMouseReleased(canvasClickRelease());
-                canvas.setOnMouseDragged(canvasDragResize(gc));
+            currentFloor.getCanvas().setOnMousePressed(doorClickCanvasHandle());
+            currentFloor.getCanvas().setOnMouseReleased(event1 -> {
+                currentFloor.getCanvas().setOnMousePressed(canvasClickResize());
+                currentFloor.getCanvas().setOnMouseReleased(canvasClickRelease());
+                currentFloor.getCanvas().setOnMouseDragged(canvasDragResize());
             });
         };
     }
@@ -345,23 +350,23 @@ public class BuildingController {
         return event -> {
             var x = event.getX();
             var y = event.getY();
-            for (var room : rooms) {
+            for (var room : currentFloor.getRooms()) {
                 if (room.isInside(x, y)) {
                     source = room;
-                    System.out.println("Source room: " + rooms.indexOf(room));
+                    System.out.println("Source room: " + currentFloor.getRooms().indexOf(room));
                     break;
                 }
             }
         };
     }
 
-    public EventHandler<ActionEvent> sourceButtonHandle(GraphicsContext gc) {
+    public EventHandler<ActionEvent> sourceButtonHandle() {
         return event -> {
-            canvas.setOnMousePressed(sourceClickCanvasHandle());
-            canvas.setOnMouseReleased(event1 -> {
-                canvas.setOnMousePressed(canvasClickResize());
-                canvas.setOnMouseReleased(canvasClickRelease());
-                canvas.setOnMouseDragged(canvasDragResize(gc));
+            currentFloor.getCanvas().setOnMousePressed(sourceClickCanvasHandle());
+            currentFloor.getCanvas().setOnMouseReleased(event1 -> {
+                currentFloor.getCanvas().setOnMousePressed(canvasClickResize());
+                currentFloor.getCanvas().setOnMouseReleased(canvasClickRelease());
+                currentFloor.getCanvas().setOnMouseDragged(canvasDragResize());
             });
         };
     }
@@ -375,41 +380,16 @@ public class BuildingController {
             MaximumFlowAlgorithm<Room, Door> algorithm = new EdmondsKarpMFImpl<>(flowNetwork);
             double maxFlow = algorithm.getMaximumFlow(source, sink).getValue();
             System.out.println(maxFlow);
-
-//            Graph<Object, DefaultWeightedEdge> tempGraph = new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
-//            for (int i = 0; i < 5; i++) {
-//                tempGraph.addVertex(i);
-//            }
-//            DefaultWeightedEdge edge = tempGraph.addEdge(0, 2);
-//            tempGraph.setEdgeWeight(edge, 99);
-//            edge = tempGraph.addEdge(0, 3);
-//            tempGraph.setEdgeWeight(edge, 3);
-//            edge = tempGraph.addEdge(2, 3);
-//            tempGraph.setEdgeWeight(edge, 2);
-//            edge = tempGraph.addEdge(2, 1);
-//            tempGraph.setEdgeWeight(edge, 3);
-//            edge = tempGraph.addEdge(3, 1);
-//            tempGraph.setEdgeWeight(edge, 6);
-//            edge = tempGraph.addEdge(2, 4);
-//            tempGraph.setEdgeWeight(edge, 3);
-//            edge = tempGraph.addEdge(1, 4);
-//            tempGraph.setEdgeWeight(edge, 99);
-//
-//
-//            MaximumFlowAlgorithm<Object, DefaultWeightedEdge> algorithm = new EdmondsKarpMFImpl<>(tempGraph);
-//            double maxFlow = algorithm.getMaximumFlow(0, 4).getValue();
-//            System.out.println(maxFlow);
-
         };
     }
 
-    public void draw(GraphicsContext gc) {
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        for (var room : rooms) {
-            drawRoom(gc, room);
+    public void draw() {
+        currentFloor.getCanvas().getGraphicsContext2D().clearRect(0, 0, currentFloor.getCanvas().getWidth(), currentFloor.getCanvas().getHeight());
+        for (var room : currentFloor.getRooms()) {
+            drawRoom(currentFloor.getCanvas().getGraphicsContext2D(), room);
             // draw room index
-            gc.setFill(Color.RED);
-            gc.fillText(String.valueOf(rooms.indexOf(room)), room.getX() + room.getWidth() / 2, room.getY() + room.getHeight() / 2);
+            currentFloor.getCanvas().getGraphicsContext2D().setFill(Color.RED);
+            currentFloor.getCanvas().getGraphicsContext2D().fillText(String.valueOf(currentFloor.getRooms().indexOf(room)), room.getX() + room.getWidth() / 2, room.getY() + room.getHeight() / 2);
         }
     }
 
@@ -428,23 +408,55 @@ public class BuildingController {
         gc.fillText(String.valueOf(door.getWeight()), door.getX() - 10, door.getY() - 5);
     }
 
-    public void addRoom(Room room) {
-        rooms.add(room);
+    public EventHandler<ActionEvent> newFloorHandle(BorderPane root) {
+        return event -> {
+            currentFloor = new Floor(this, new Canvas(1200, 800));
+            floors.add(currentFloor);
+            this.getCanvas().setOnMousePressed(canvasClickResize());
+            this.getCanvas().setOnMouseReleased(canvasClickRelease());
+            this.getCanvas().setOnMouseDragged(canvasDragResize());
+            draw();
+            root.setCenter(currentFloor.getCanvas());
+        };
     }
 
-    public List<Room> getRooms() {
-        return rooms;
+    public EventHandler<ActionEvent> previousFloorHandle(BorderPane root) {
+        return event -> {
+            if (floors.indexOf(currentFloor) > 0) {
+                currentFloor = floors.get(floors.indexOf(currentFloor) - 1);
+                draw();
+                root.setCenter(currentFloor.getCanvas());
+            }
+        };
     }
 
-    public void setCanvas(Canvas canvas) {
-        this.canvas = canvas;
+    public EventHandler<ActionEvent> nextFloorHandle(BorderPane root) {
+        return event -> {
+            if (floors.indexOf(currentFloor) < floors.size() - 1) {
+                currentFloor = floors.get(floors.indexOf(currentFloor) + 1);
+                draw();
+                root.setCenter(currentFloor.getCanvas());
+            }
+        };
     }
+
+//    public void addRoom(Room room) {
+//        rooms.add(room);
+//    }
+
+//    public List<Room> getRooms() {
+//        return rooms;
+//    }
+
+//    public void setCanvas(Canvas canvas) {
+//        this.canvas = canvas;
+//    }
 
     public void printEdges() {
         for (Room room : flowNetwork.vertexSet()) {
-            System.out.println("Room " + rooms.indexOf(room) + " has edges:");
+            System.out.println("Room " + currentFloor.getRooms().indexOf(room) + " has edges:");
             for (Door door : flowNetwork.edgesOf(room)) {
-                System.out.println("\tDoor " + rooms.indexOf(flowNetwork.getEdgeSource(door)) + " -> " + rooms.indexOf(flowNetwork.getEdgeTarget(door)) + " with capacity " + door.getWeight());
+                System.out.println("\tDoor " + currentFloor.getRooms().indexOf(flowNetwork.getEdgeSource(door)) + " -> " + currentFloor.getRooms().indexOf(flowNetwork.getEdgeTarget(door)) + " with capacity " + door.getWeight());
             }
         }
     }

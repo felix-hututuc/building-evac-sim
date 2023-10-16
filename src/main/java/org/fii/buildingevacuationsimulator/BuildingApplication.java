@@ -16,34 +16,35 @@ public class BuildingApplication extends Application {
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Building Evacuation Simulator");
-        Canvas canvas = new Canvas(1200, 800);
-        buildingController.setCanvas(canvas);
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-        gc.setStroke(Color.BLACK);
+//        Canvas canvas = new Canvas(1200, 800);
+//        buildingController.setCanvas(canvas);
+//        GraphicsContext gc = buildingController.getCanvas().getGraphicsContext2D();
+//        gc.setStroke(Color.BLACK);
 
-        buildingController.draw(gc);
+        buildingController.draw();
 
-        canvas.setOnMousePressed(buildingController.canvasClickResize());
-
-        canvas.setOnMouseReleased(buildingController.canvasClickRelease());
-
-        canvas.setOnMouseDragged(buildingController.canvasDragResize(gc));
+//        buildingController.getCanvas().setOnMousePressed(buildingController.canvasClickResize());
+//
+//        buildingController.getCanvas().setOnMouseReleased(buildingController.canvasClickRelease());
+//
+//        buildingController.getCanvas().setOnMouseDragged(buildingController.canvasDragResize());
+        BorderPane root = new BorderPane();
 
         ToolBar toolBar = new ToolBar();
         Button verticalButton = new Button("Vertical wall");
-        verticalButton.setOnAction(buildingController.verticalButtonHandle(gc));
+        verticalButton.setOnAction(buildingController.verticalButtonHandle());
         toolBar.getItems().add(verticalButton);
 
         Button horizontalButton = new Button("Horizontal wall");
-        horizontalButton.setOnAction(buildingController.horizontalButtonHandle(gc));
+        horizontalButton.setOnAction(buildingController.horizontalButtonHandle());
         toolBar.getItems().add(horizontalButton);
 
         Button doorButton = new Button("Door");
-        doorButton.setOnAction(buildingController.doorButtonHandle(gc));
+        doorButton.setOnAction(buildingController.doorButtonHandle());
         toolBar.getItems().add(doorButton);
 
         Button sourceButton = new Button("Select Source");
-        sourceButton.setOnAction(buildingController.sourceButtonHandle(gc));
+        sourceButton.setOnAction(buildingController.sourceButtonHandle());
         toolBar.getItems().add(sourceButton);
 
         Button maxFlowButton = new Button("Max Flow");
@@ -54,8 +55,19 @@ public class BuildingApplication extends Application {
         showGraphButton.setOnAction(buildingController.showGraphHandle());
         toolBar.getItems().add(showGraphButton);
 
-        BorderPane root = new BorderPane();
-        root.setCenter(canvas);
+        Button newFloorButton = new Button("New Floor");
+        newFloorButton.setOnAction(buildingController.newFloorHandle(root));
+        toolBar.getItems().add(newFloorButton);
+
+        Button previousFloorButton = new Button("Previous Floor");
+        previousFloorButton.setOnAction(buildingController.previousFloorHandle(root));
+        toolBar.getItems().add(previousFloorButton);
+
+        Button nextFloorButton = new Button("Next Floor");
+        nextFloorButton.setOnAction(buildingController.nextFloorHandle(root));
+        toolBar.getItems().add(nextFloorButton);
+
+        root.setCenter(buildingController.getCanvas());
         root.setTop(toolBar);
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
