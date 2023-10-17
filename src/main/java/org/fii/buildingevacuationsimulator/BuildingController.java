@@ -4,6 +4,8 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -21,7 +23,6 @@ public class BuildingController {
     Graph<Room, Door> flowNetwork;
     private Room source;
     private final Room sink;
-
     private final List<Floor> floors = new ArrayList<>();
     private Floor currentFloor;
 
@@ -32,14 +33,16 @@ public class BuildingController {
         flowNetwork.addVertex(sink);
 
         currentFloor = new Floor(new Canvas(1200, 800));
+
         Room firstRoom = new Room(300, 100, 600, 600);
         currentFloor.addRoom(firstRoom);
         flowNetwork.addVertex(firstRoom);
 
+        currentFloor.getCanvas().setOnMousePressed(canvasClickResize());
+        currentFloor.getCanvas().setOnMouseReleased(canvasClickRelease());
+        currentFloor.getCanvas().setOnMouseDragged(canvasDragResize());
+
         floors.add(currentFloor);
-        this.getCanvas().setOnMousePressed(canvasClickResize());
-        this.getCanvas().setOnMouseReleased(canvasClickRelease());
-        this.getCanvas().setOnMouseDragged(canvasDragResize());
     }
 
     public Canvas getCanvas() {
@@ -96,15 +99,14 @@ public class BuildingController {
     public EventHandler<MouseEvent> canvasDragResize() {
         return event -> {
             for (var room : currentFloor.getRooms()) {
-                if (room.isDraggingRight()) {
-                    if (event.getX() > 0 && event.getX() < currentFloor.getCanvas().getWidth()) {
+                if (room.isDraggingRight() && (event.getX() > 0 && event.getX() < currentFloor.getCanvas().getWidth())) {
                         for (var door : room.getDoors()) {
                             if (door.getX() == room.getX() + room.getWidth()) {
                                 door.setX(room.getX() + event.getX() - room.getX());
                             }
                         }
                         room.setWidth(event.getX() - room.getX());
-                    }
+
                 }
                 if (room.isDraggingLeft()) {
                     if (event.getX() > 0 && event.getX() < currentFloor.getCanvas().getWidth()) {
@@ -429,6 +431,28 @@ public class BuildingController {
                 currentFloor = floors.get(floors.indexOf(currentFloor) + 1);
                 draw();
                 root.setCenter(currentFloor.getCanvas());
+            }
+        };
+    }
+
+    public EventHandler<MouseEvent> changeFloorHandle(BorderPane root) {
+        return event -> {
+            MenuButton menuButton = (MenuButton) event.getSource();
+            menuButton.getItems().clear();
+            if (floors.indexOf(currentFloor) >= 1) {
+                MenuItem previousFloorButton = new MenuItem("Previous Floor");
+                previousFloorButton.setOnAction(previousFloorHandle(root));
+                menuButton.getItems().add(previousFloorButton);
+            }
+            if (floors.indexOf(currentFloor) < floors.size() - 1) {
+                MenuItem nextFloorButton = new MenuItem("Next Floor");
+                nextFloorButton.setOnAction(nextFloorHandle(root));
+                menuButton.getItems().add(nextFloorButton);
+            }
+            else if (floors.indexOf(currentFloor) == floors.size() - 1) {
+                MenuItem newFloorButton = new MenuItem("New Floor");
+                newFloorButton.setOnAction(newFloorHandle(root));
+                menuButton.getItems().add(newFloorButton);
             }
         };
     }

@@ -3,6 +3,8 @@ package org.fii.buildingevacuationsimulator;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -43,17 +45,13 @@ public class BuildingApplication extends Application {
         showGraphButton.setOnAction(buildingController.showGraphHandle());
         toolBar.getItems().add(showGraphButton);
 
-        Button newFloorButton = new Button("New Floor");
+        MenuItem newFloorButton = new MenuItem("New Floor");
         newFloorButton.setOnAction(buildingController.newFloorHandle(root));
-        toolBar.getItems().add(newFloorButton);
 
-        Button previousFloorButton = new Button("Previous Floor");
-        previousFloorButton.setOnAction(buildingController.previousFloorHandle(root));
-        toolBar.getItems().add(previousFloorButton);
-
-        Button nextFloorButton = new Button("Next Floor");
-        nextFloorButton.setOnAction(buildingController.nextFloorHandle(root));
-        toolBar.getItems().add(nextFloorButton);
+        MenuButton menuButton = new MenuButton("Change Floor");
+        menuButton.setOnMouseClicked(buildingController.changeFloorHandle(root));
+        menuButton.getItems().add(newFloorButton);
+        toolBar.getItems().add(menuButton);
 
         root.setCenter(buildingController.getCanvas());
         root.setTop(toolBar);
