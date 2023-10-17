@@ -1,5 +1,7 @@
 package org.fii.buildingevacuationsimulator;
 
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
 import java.util.Objects;
@@ -52,6 +54,14 @@ public class Door extends DefaultWeightedEdge {
     @Override
     public double getWeight() {
         return capacity;
+    }
+
+    public void draw(GraphicsContext gc) {
+        gc.setFill(Color.BLACK);
+        gc.fillOval(x - 5, y - 5, 10, 10);
+        // draw capacity
+        gc.setFill(Color.RED);
+        gc.fillText(String.valueOf(capacity), x - 10, y - 5);
     }
 
     @Override

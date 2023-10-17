@@ -1,5 +1,8 @@
 package org.fii.buildingevacuationsimulator;
 
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+
 import java.util.*;
 
 public class Room {
@@ -174,5 +177,12 @@ public class Room {
 
     public Set<Door> getDoors() {
         return doors;
+    }
+
+    public void draw(GraphicsContext gc) {
+        gc.strokeRect(x, y, width, height);
+        for (var door : doors) {
+            door.draw(gc);
+        }
     }
 }

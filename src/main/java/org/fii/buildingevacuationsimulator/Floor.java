@@ -8,6 +8,7 @@ import java.util.List;
 
 public class Floor {
     private final List<Room> rooms = new ArrayList<>();
+    private final List<Stair> stairs = new ArrayList<>();
     private final Canvas canvas;
 
     public Floor (Canvas canvas) {
@@ -28,6 +29,17 @@ public class Floor {
         return rooms;
     }
 
+    public void addStair(Stair stair) {
+        stairs.add(stair);
+    }
+
+    public void removeStair(Stair stair) {
+        stairs.remove(stair);
+    }
+
+    public List<Stair> getStairs() {
+        return stairs;
+    }
 
     public Canvas getCanvas() {
         return canvas;

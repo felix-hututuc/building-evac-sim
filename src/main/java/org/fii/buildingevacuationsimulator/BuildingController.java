@@ -335,6 +335,57 @@ public class BuildingController {
         };
     }
 
+    public EventHandler<ActionEvent> stairButtonHandle() {
+        return event -> {
+            currentFloor.getCanvas().setOnMousePressed(stairClickCanvasHandle());
+            currentFloor.getCanvas().setOnMouseReleased(event1 -> {
+                currentFloor.getCanvas().setOnMousePressed(canvasClickResize());
+                currentFloor.getCanvas().setOnMouseReleased(canvasClickRelease());
+                currentFloor.getCanvas().setOnMouseDragged(canvasDragResize());
+            });
+        };
+    }
+
+    private EventHandler<MouseEvent> stairClickCanvasHandle() {
+        return event -> {
+            int currentFloorIndex = floors.indexOf(currentFloor);
+            if (currentFloorIndex == 0) {
+                System.out.println("Cannot add stair from first floor");
+                return;
+            }
+            var x = event.getX();
+            var y = event.getY();
+            for (Room room : currentFloor.getRooms()) {
+                if (room.isInside(x, y)) {
+                    for (Room roomBellow : floors.get(currentFloorIndex - 1).getRooms()) {
+                        if (roomBellow.isInside(x, y)) {
+                            TextInputDialog dialog = new TextInputDialog();
+                            dialog.setTitle("Input");
+                            dialog.setHeaderText("Input stair capacity");
+                            Optional<String> result = dialog.showAndWait();
+                            if (result.isEmpty() || result.get().isEmpty()) {
+                                result = Optional.of("0");
+                            }
+                            Stair stair1 = new Stair(currentFloor, floors.get(currentFloorIndex - 1), room, roomBellow, Double.parseDouble(result.get()), x, y);
+                            Stair stair2 = new Stair(floors.get(currentFloorIndex - 1), currentFloor, roomBellow, room, Double.parseDouble(result.get()), x, y);
+                            currentFloor.addStair(stair1);
+                            floors.get(currentFloorIndex - 1).addStair(stair2);
+                            room.addDoor(stair1);
+                            roomBellow.addDoor(stair2);
+                            flowNetwork.addEdge(room, roomBellow, stair1);
+                            flowNetwork.setEdgeWeight(stair1, Double.parseDouble(result.get()));
+                            flowNetwork.addEdge(roomBellow, room, stair2);
+                            flowNetwork.setEdgeWeight(stair2, Double.parseDouble(result.get()));
+                            draw();
+                            return;
+                        }
+                    }
+                }
+            }
+        };
+    }
+
+
     // select source node and return it by clicking on it
     public EventHandler<MouseEvent> sourceClickCanvasHandle() {
         return event -> {
@@ -376,26 +427,11 @@ public class BuildingController {
     public void draw() {
         currentFloor.getCanvas().getGraphicsContext2D().clearRect(0, 0, currentFloor.getCanvas().getWidth(), currentFloor.getCanvas().getHeight());
         for (var room : currentFloor.getRooms()) {
-            drawRoom(currentFloor.getCanvas().getGraphicsContext2D(), room);
+            room.draw(currentFloor.getCanvas().getGraphicsContext2D());
             // draw room index
             currentFloor.getCanvas().getGraphicsContext2D().setFill(Color.RED);
             currentFloor.getCanvas().getGraphicsContext2D().fillText(String.valueOf(currentFloor.getRooms().indexOf(room)), room.getX() + room.getWidth() / 2, room.getY() + room.getHeight() / 2);
         }
-    }
-
-    public void drawRoom(GraphicsContext gc, Room room) {
-        gc.strokeRect(room.getX(), room.getY(), room.getWidth(), room.getHeight());
-        for (var door : room.getDoors()) {
-            drawDoor(gc, door);
-        }
-    }
-
-    public void drawDoor(GraphicsContext gc, Door door) {
-        gc.setFill(Color.BLACK);
-        gc.fillOval(door.getX() - 5, door.getY() - 5, 10, 10);
-        // draw capacity
-        gc.setFill(Color.RED);
-        gc.fillText(String.valueOf(door.getWeight()), door.getX() - 10, door.getY() - 5);
     }
 
     public EventHandler<ActionEvent> newFloorHandle(BorderPane root) {
