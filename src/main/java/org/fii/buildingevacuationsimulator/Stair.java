@@ -1,6 +1,7 @@
 package org.fii.buildingevacuationsimulator;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 
 import java.util.Objects;
 
@@ -21,10 +22,21 @@ public class Stair extends Door {
         return floor2;
     }
 
-//    @Override
-//    public void draw(GraphicsContext gc) {
-//
-//    }
+    @Override
+    public void draw(GraphicsContext gc) {
+        gc.setFill(Color.BLACK);
+        if (floor1.getFloorNumber() > floor2.getFloorNumber()) {
+            gc.strokeLine(getX(), getY(), getX(), getY() + 20);
+            gc.strokeLine(getX(), getY() + 20, getX() - 6, getY() + 14);
+            gc.strokeLine(getX(), getY() + 20, getX() + 6, getY() + 14);
+        } else {
+            gc.strokeLine(getX(), getY(), getX(), getY() - 20);
+            gc.strokeLine(getX(), getY() - 20, getX() - 6, getY() - 14);
+            gc.strokeLine(getX(), getY() - 20, getX() + 6, getY() - 14);
+        }
+        gc.setFill(Color.RED);
+        gc.fillText(String.valueOf(getWeight()), getX() + 5, getY() + 5);
+    }
 
     @Override
     public boolean equals(Object o) {

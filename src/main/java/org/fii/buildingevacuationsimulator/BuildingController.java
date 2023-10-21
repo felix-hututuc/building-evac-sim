@@ -32,7 +32,7 @@ public class BuildingController {
         sink = new Room(0,0,0,0);
         flowNetwork.addVertex(sink);
 
-        currentFloor = new Floor(new Canvas(1200, 800));
+        currentFloor = new Floor(0);
 
         Room firstRoom = new Room(300, 100, 600, 600);
         currentFloor.addRoom(firstRoom);
@@ -281,7 +281,7 @@ public class BuildingController {
                             dialog.setHeaderText("Input door capacity");
                             Optional<String> result = dialog.showAndWait();
                             if (result.isEmpty() || result.get().isEmpty()) {
-                                result = Optional.of("0");
+                                return;
                             }
                             double[] nearestEdge = room.getNearestEdge(x, y);
 
@@ -308,7 +308,7 @@ public class BuildingController {
                     dialog.setHeaderText("Input door capacity");
                     Optional<String> result = dialog.showAndWait();
                     if (result.isEmpty() || result.get().isEmpty()) {
-                        result = Optional.of("0");
+                        return;
                     }
                     double[] nearestEdge = room.getNearestEdge(x, y);
                     Door door = new Door(room, sink, Double.parseDouble(result.get()), nearestEdge[0], nearestEdge[1]);
@@ -364,7 +364,7 @@ public class BuildingController {
                             dialog.setHeaderText("Input stair capacity");
                             Optional<String> result = dialog.showAndWait();
                             if (result.isEmpty() || result.get().isEmpty()) {
-                                result = Optional.of("0");
+                                return;
                             }
                             Stair stair1 = new Stair(currentFloor, floors.get(currentFloorIndex - 1), room, roomBellow, Double.parseDouble(result.get()), x, y);
                             Stair stair2 = new Stair(floors.get(currentFloorIndex - 1), currentFloor, roomBellow, room, Double.parseDouble(result.get()), x, y);
@@ -436,7 +436,7 @@ public class BuildingController {
 
     public EventHandler<ActionEvent> newFloorHandle(BorderPane root) {
         return event -> {
-            currentFloor = new Floor(new Canvas(1200, 800));
+            currentFloor = new Floor(currentFloor.getFloorNumber() + 1);
 
             Room firstRoom = new Room(300, 100, 600, 600);
             currentFloor.addRoom(firstRoom);

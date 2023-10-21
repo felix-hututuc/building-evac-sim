@@ -7,13 +7,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Floor {
+    private int floorNumber = 0;
     private final List<Room> rooms = new ArrayList<>();
     private final List<Stair> stairs = new ArrayList<>();
-    private final Canvas canvas;
+    private final Canvas canvas = new Canvas(1200, 800);
 
-    public Floor (Canvas canvas) {
-        this.canvas = canvas;
+    public Floor (int floorNumber) {
+        this.floorNumber = floorNumber;
         this.canvas.getGraphicsContext2D().setStroke(Color.BLACK);
+    }
+
+    public int getFloorNumber() {
+        return floorNumber;
+    }
+
+    public void setFloorNumber(int floorNumber) {
+        this.floorNumber = floorNumber;
     }
 
     public void addRoom(Room room) {
