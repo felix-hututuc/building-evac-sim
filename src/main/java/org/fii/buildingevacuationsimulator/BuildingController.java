@@ -18,8 +18,6 @@ import org.jgrapht.graph.DirectedWeightedMultigraph;
 import java.util.*;
 
 public class BuildingController {
-    private double mouseX;
-    private double mouseY;
     Graph<Room, Door> flowNetwork;
     private Room source;
     private final Room sink;
@@ -51,8 +49,8 @@ public class BuildingController {
 
     public EventHandler<MouseEvent> canvasClickResize() {
         return event -> {
-            mouseX = event.getX();
-            mouseY = event.getY();
+            double mouseX = event.getX();
+            double mouseY = event.getY();
             for (var room : currentFloor.getRooms()) {
                 var rectX = room.getX();
                 var rectY = room.getY();
