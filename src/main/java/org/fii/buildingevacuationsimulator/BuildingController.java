@@ -11,6 +11,7 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
@@ -57,6 +58,10 @@ public class BuildingController {
         this.currentFloor = currentFloor;
         this.flowNetwork = flowNetwork;
         this.sink = sink;
+
+        currentFloor.getCanvas().setOnMousePressed(canvasClickResize());
+        currentFloor.getCanvas().setOnMouseReleased(canvasClickRelease());
+        currentFloor.getCanvas().setOnMouseDragged(canvasDragResize());
     }
 
     public Canvas getCanvas() {
@@ -553,6 +558,7 @@ public class BuildingController {
             // write the json to a file
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save File");
+            fileChooser.setInitialDirectory(new File("./saves"));
             fileChooser.getExtensionFilters().addAll(
                     new FileChooser.ExtensionFilter("JSON", "*.json")
             );
@@ -641,10 +647,11 @@ public class BuildingController {
         return buildingController;
     }
 
-    public EventHandler<ActionEvent> importHandle() {
+    public EventHandler<ActionEvent> importHandle(BorderPane root) {
         return event -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Open File");
+            fileChooser.setInitialDirectory(new File("./saves"));
             fileChooser.getExtensionFilters().addAll(
                     new FileChooser.ExtensionFilter("JSON", "*.json")
             );
@@ -659,6 +666,7 @@ public class BuildingController {
                     flowNetwork = buildingController.flowNetwork;
                     sink = buildingController.sink;
                     buildingController.draw();
+                    root.setCenter(currentFloor.getCanvas());
                 } catch (IOException e) {
                     System.out.println("Error while opening file");
                 }

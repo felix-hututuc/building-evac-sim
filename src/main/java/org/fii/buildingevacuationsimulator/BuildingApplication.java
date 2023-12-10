@@ -62,7 +62,7 @@ public class BuildingApplication extends Application {
         toolBar.getItems().add(exportButton);
 
         Button importButton = new Button("Import");
-        importButton.setOnAction(buildingController.importHandle());
+        importButton.setOnAction(buildingController.importHandle(root));
         toolBar.getItems().add(importButton);
 
         root.setCenter(buildingController.getCanvas());
