@@ -450,6 +450,8 @@ public class BuildingController {
             // draw room index
             currentFloor.getCanvas().getGraphicsContext2D().setFill(Color.RED);
             currentFloor.getCanvas().getGraphicsContext2D().fillText(String.valueOf(currentFloor.getRooms().indexOf(room)), room.getX() + room.getWidth() / 2, room.getY() + room.getHeight() / 2);
+            // display current floor number
+            currentFloor.getCanvas().getGraphicsContext2D().fillText("Floor " + currentFloor.getFloorNumber(), currentFloor.getCanvas().getWidth() * ((double) 9 / 10), currentFloor.getCanvas().getHeight() * ((double) 1 / 10));
         }
     }
 
