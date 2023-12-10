@@ -633,9 +633,7 @@ public class BuildingController {
                     .orElseThrow();
             Stair stair = Stair.fromJson((JsonObject) stairJson, floor1, floor2);
             floor1.addStair(stair);
-            floor2.addStair(stair);
             room1.addDoor(stair);
-            room2.addDoor(stair);
             buildingController.flowNetwork.addEdge(room1, room2, stair);
             buildingController.flowNetwork.setEdgeWeight(stair, stair.getWeight());
         });
