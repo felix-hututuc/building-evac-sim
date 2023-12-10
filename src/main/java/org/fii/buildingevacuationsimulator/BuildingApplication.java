@@ -57,6 +57,14 @@ public class BuildingApplication extends Application {
         menuButton.getItems().add(newFloorButton);
         toolBar.getItems().add(menuButton);
 
+        Button exportButton = new Button("Export");
+        exportButton.setOnAction(buildingController.exportHandle());
+        toolBar.getItems().add(exportButton);
+
+        Button importButton = new Button("Import");
+        importButton.setOnAction(buildingController.importHandle());
+        toolBar.getItems().add(importButton);
+
         root.setCenter(buildingController.getCanvas());
         root.setTop(toolBar);
         Scene scene = new Scene(root);

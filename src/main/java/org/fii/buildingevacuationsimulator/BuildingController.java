@@ -1,38 +1,47 @@
 package org.fii.buildingevacuationsimulator;
 
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonWriterFactory;
+import jakarta.json.stream.JsonGenerator;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
+import javafx.stage.PopupWindow;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.flow.EdmondsKarpMFImpl;
 import org.jgrapht.alg.interfaces.MaximumFlowAlgorithm;
 import org.jgrapht.graph.DirectedWeightedMultigraph;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.*;
 
 public class BuildingController {
     Graph<Room, Door> flowNetwork;
     private Room source;
-    private final Room sink;
+    private Room sink;
     private final List<Floor> floors = new ArrayList<>();
     private Floor currentFloor;
 
     public BuildingController() {
         flowNetwork = new DirectedWeightedMultigraph<>(Door.class);
 
-        sink = new Room(0,0,0,0);
+        sink = new Room(0,0,0,0, -1);
         flowNetwork.addVertex(sink);
 
         currentFloor = new Floor(0);
 
-        Room firstRoom = new Room(300, 100, 600, 600);
+        Room firstRoom = new Room(300, 100, 600, 600, 0);
         currentFloor.addRoom(firstRoom);
         flowNetwork.addVertex(firstRoom);
 
@@ -41,6 +50,13 @@ public class BuildingController {
         currentFloor.getCanvas().setOnMouseDragged(canvasDragResize());
 
         floors.add(currentFloor);
+    }
+
+    public BuildingController(List<Floor> floors, Floor currentFloor, Graph<Room, Door> flowNetwork, Room sink) {
+        this.floors.addAll(floors);
+        this.currentFloor = currentFloor;
+        this.flowNetwork = flowNetwork;
+        this.sink = sink;
     }
 
     public Canvas getCanvas() {
@@ -168,8 +184,8 @@ public class BuildingController {
             var y = event.getY();
             for (var room : currentFloor.getRooms()) {
                 if (room.isInside(x, y)) {
-                    Room newRoom1 = new Room(room.getX(), room.getY(), x - room.getX(), room.getHeight());
-                    Room newRoom2 = new Room(x, room.getY(), room.getWidth() - (x - room.getX()), room.getHeight());
+                    Room newRoom1 = new Room(room.getX(), room.getY(), x - room.getX(), room.getHeight(), currentFloor.getFloorNumber());
+                    Room newRoom2 = new Room(x, room.getY(), room.getWidth() - (x - room.getX()), room.getHeight(), currentFloor.getFloorNumber());
 
                     for (var neighbour : room.getNeighbours()) {
                         if (neighbour.getX() < x) {
@@ -220,8 +236,8 @@ public class BuildingController {
             var y = event.getY();
             for (var room : currentFloor.getRooms()) {
                 if (room.isInside(x, y)) {
-                    Room newRoom1 = new Room(room.getX(), room.getY(), room.getWidth(), y - room.getY());
-                    Room newRoom2 = new Room(room.getX(), y, room.getWidth(), room.getHeight() - (y - room.getY()));
+                    Room newRoom1 = new Room(room.getX(), room.getY(), room.getWidth(), y - room.getY(), currentFloor.getFloorNumber());
+                    Room newRoom2 = new Room(room.getX(), y, room.getWidth(), room.getHeight() - (y - room.getY()), currentFloor.getFloorNumber());
 
                     for (var neighbour : room.getNeighbours()) {
                         if (neighbour.getY() < y) {
@@ -436,7 +452,7 @@ public class BuildingController {
         return event -> {
             currentFloor = new Floor(currentFloor.getFloorNumber() + 1);
 
-            Room firstRoom = new Room(300, 100, 600, 600);
+            Room firstRoom = new Room(300, 100, 600, 600, currentFloor.getFloorNumber());
             currentFloor.addRoom(firstRoom);
             flowNetwork.addVertex(firstRoom);
 
@@ -502,5 +518,153 @@ public class BuildingController {
 
     public EventHandler<ActionEvent> showGraphHandle() {
         return event -> printEdges();
+    }
+
+    // export as a JSON object using the json library
+    public JsonObject toJson() {
+        return Json.createObjectBuilder()
+                .add("sink", sink.toJson())
+                .add("floorsNr", floors.size())
+                .add("currentFloor", floors.indexOf(currentFloor))
+                .add("rooms", Json.createArrayBuilder(
+                        floors.stream()
+                                .flatMap(floor -> floor.getRooms().stream())
+                                .map(Room::toJson)
+                                .toList()
+                ))
+                .add("doors", Json.createArrayBuilder(
+                        floors.stream()
+                                .flatMap(floor -> floor.getRooms().stream())
+                                .flatMap(room -> room.getDoors().stream())
+                                .map(Door::toJson)
+                                .toList()
+                ))
+                .add("stairs", Json.createArrayBuilder(
+                        floors.stream()
+                                .flatMap(floor -> floor.getStairs().stream())
+                                .map(Stair::toJson)
+                                .toList()
+                ))
+                .build();
+    }
+
+    public EventHandler<ActionEvent> exportHandle() {
+        return event -> {
+            // write the json to a file
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save File");
+            fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("JSON", "*.json")
+            );
+            File file = fileChooser.showSaveDialog(new PopupWindow() {});
+            if (file != null) {
+                try {
+                    file.createNewFile();
+                    Map<String, Boolean> config = new HashMap<>();
+
+                    config.put(JsonGenerator.PRETTY_PRINTING, true);
+                    JsonWriterFactory writerFactory = Json.createWriterFactory(config);
+                    Writer writer = new FileWriter(file);
+                    writerFactory.createWriter(writer).write(toJson());
+                    writer.close();
+                } catch (IOException e) {
+                    System.out.println("Error while saving file");
+                }
+            }
+        };
+    }
+
+    // import from a json object using the json library
+    public static BuildingController fromJson(JsonObject jsonObject) {
+        Room sink = Room.fromJson(jsonObject.getJsonObject("sink"));
+
+        Graph<Room, Door> flowNetwork = new DirectedWeightedMultigraph<>(Door.class);
+        flowNetwork.addVertex(sink);
+
+        int floorsNr = jsonObject.getInt("floorsNr");
+        int currentFloorNr = jsonObject.getInt("currentFloor");
+        List<Floor> floors = new ArrayList<>();
+        for (int i = 0; i < floorsNr; i++) {
+            floors.add(new Floor(i));
+        }
+
+        BuildingController buildingController = new BuildingController(floors, floors.get(currentFloorNr), flowNetwork, sink);
+
+        List<Room> rooms = new ArrayList<>();
+        jsonObject.getJsonArray("rooms").forEach(roomJson -> {
+            Room room = Room.fromJson((JsonObject) roomJson);
+            rooms.add(room);
+            buildingController.floors.get(room.getFloorNumber()).addRoom(room);
+            buildingController.flowNetwork.addVertex(room);
+        });
+        jsonObject.getJsonArray("doors").forEach(doorJson -> {
+            Room room1 = rooms.stream()
+                    .filter(room -> room.getUuid().equals(((JsonObject) doorJson).getString("room1")))
+                    .findFirst()
+                    .orElseThrow();
+            Room room2 = null;
+            if (((JsonObject) doorJson).getString("room2").equals(buildingController.sink.getUuid())) {
+                room2 = buildingController.sink;
+            } else {
+                room2 = rooms.stream()
+                        .filter(room -> room.getUuid().equals(((JsonObject) doorJson).getString("room2")))
+                        .findFirst()
+                        .orElseThrow();
+                if (room1.getFloorNumber() != room2.getFloorNumber()) {
+                    return;
+                }
+            }
+            Door door = Door.fromJson((JsonObject) doorJson, room1, room2);
+            room1.addDoor(door);
+            room2.addDoor(door);
+            buildingController.flowNetwork.addEdge(room1, room2, door);
+            buildingController.flowNetwork.setEdgeWeight(door, door.getWeight());
+        });
+        jsonObject.getJsonArray("stairs").forEach(stairJson -> {
+            Floor floor1 = buildingController.floors.get(((JsonObject) stairJson).getInt("floor1"));
+            Floor floor2 = buildingController.floors.get(((JsonObject) stairJson).getInt("floor2"));
+            Room room1 = rooms.stream()
+                    .filter(room -> room.getUuid().equals(((JsonObject) stairJson).getString("room1")))
+                    .findFirst()
+                    .orElseThrow();
+            Room room2 = rooms.stream()
+                    .filter(room -> room.getUuid().equals(((JsonObject) stairJson).getString("room2")))
+                    .findFirst()
+                    .orElseThrow();
+            Stair stair = Stair.fromJson((JsonObject) stairJson, floor1, floor2);
+            floor1.addStair(stair);
+            floor2.addStair(stair);
+            room1.addDoor(stair);
+            room2.addDoor(stair);
+            buildingController.flowNetwork.addEdge(room1, room2, stair);
+            buildingController.flowNetwork.setEdgeWeight(stair, stair.getWeight());
+        });
+
+        return buildingController;
+    }
+
+    public EventHandler<ActionEvent> importHandle() {
+        return event -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Open File");
+            fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("JSON", "*.json")
+            );
+            File file = fileChooser.showOpenDialog(new PopupWindow() {});
+            if (file != null) {
+                try {
+                    JsonObject jsonObject = Json.createReader(file.toURI().toURL().openStream()).readObject();
+                    BuildingController buildingController = fromJson(jsonObject);
+                    currentFloor = buildingController.currentFloor;
+                    floors.clear();
+                    floors.addAll(buildingController.floors);
+                    flowNetwork = buildingController.flowNetwork;
+                    sink = buildingController.sink;
+                    buildingController.draw();
+                } catch (IOException e) {
+                    System.out.println("Error while opening file");
+                }
+            }
+        };
     }
 }

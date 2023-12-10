@@ -3,16 +3,19 @@ package org.fii.buildingevacuationsimulator;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import java.util.*;
 
 public class Room {
+    private final String uuid;
     private double x;
     private double y;
     private double width;
     private double height;
     private double space = 0;
+    private int floorNumber;
     private final Set<Room> neighbours = new HashSet<>();
-    private final Set<Room> doorNeighbours = new HashSet<>();
     private final Set<Door> doors = new HashSet<>();
 
     private boolean draggingRight = false;
@@ -20,11 +23,26 @@ public class Room {
     private boolean draggingUp = false;
     private boolean draggingDown = false;
 
-    public Room(double x, double y, double width, double height) {
+    public Room(double x, double y, double width, double height, int floorNumber) {
+        this.uuid = UUID.randomUUID().toString();
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
+        this.floorNumber = floorNumber;
+    }
+
+    public Room(String uuid, double x, double y, double width, double height, int floorNumber) {
+        this.uuid = uuid;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.floorNumber = floorNumber;
+    }
+
+    public String getUuid() {
+        return uuid;
     }
 
     public double getX() {
@@ -159,18 +177,6 @@ public class Room {
         neighbours.remove(room);
     }
 
-    public void addDoorNeighbour(Room room) {
-        doorNeighbours.add(room);
-    }
-
-    public Set<Room> getDoorNeighbours() {
-        return doorNeighbours;
-    }
-
-    public void removeDoorNeighbour(Room room) {
-        doorNeighbours.remove(room);
-    }
-
     public void addDoor(Door door) {
         doors.add(door);
     }
@@ -184,5 +190,33 @@ public class Room {
         for (var door : doors) {
             door.draw(gc);
         }
+    }
+
+    // export a room as a JSON object using the Json library
+    public JsonObject toJson() {
+        return Json.createObjectBuilder()
+                .add("uuid", uuid)
+                .add("x", x)
+                .add("y", y)
+                .add("width", width)
+                .add("height", height)
+                .add("floor", floorNumber)
+                .build();
+    }
+
+    // import a room from a JSON object using the Json library
+    public static Room fromJson(JsonObject jsonObject) {
+        return new Room(
+                jsonObject.getString("uuid"),
+                jsonObject.getJsonNumber("x").doubleValue(),
+                jsonObject.getJsonNumber("y").doubleValue(),
+                jsonObject.getJsonNumber("width").doubleValue(),
+                jsonObject.getJsonNumber("height").doubleValue(),
+                jsonObject.getInt("floor")
+        );
+    }
+
+    public int getFloorNumber() {
+        return floorNumber;
     }
 }

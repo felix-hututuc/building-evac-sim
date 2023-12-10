@@ -3,13 +3,25 @@ package org.fii.buildingevacuationsimulator;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import java.util.Objects;
+import java.util.UUID;
 
 public class Stair extends Door {
+    private final String uuid;
     private final Floor floor1;
     private final Floor floor2;
     public Stair(Floor floor1, Floor floor2, Room room1, Room room2, double capacity, double x, double y) {
         super(room1, room2, capacity, x, y);
+        this.uuid = UUID.randomUUID().toString();
+        this.floor1 = floor1;
+        this.floor2 = floor2;
+    }
+
+    public Stair(String uuid, Floor floor1, Floor floor2, Room room1, Room room2, double capacity, double x, double y) {
+        super(uuid, room1, room2, capacity, x, y);
+        this.uuid = uuid;
         this.floor1 = floor1;
         this.floor2 = floor2;
     }
@@ -47,9 +59,33 @@ public class Stair extends Door {
                 floor2.equals(stair.floor2);
     }
 
+    //export as a json object using the json library
+    public JsonObject toJson() {
+        return Json.createObjectBuilder()
+                .add("uuid", uuid)
+                .add("floor1", floor1.getFloorNumber())
+                .add("floor2", floor2.getFloorNumber())
+                .add("room1", getSource().getUuid())
+                .add("room2", getTarget().getUuid())
+                .add("capacity", getWeight())
+                .add("x", getX())
+                .add("y", getY())
+                .build();
+    }
+
+    // import a door from a json object using the json library
+    public static Stair fromJson(JsonObject jsonObject, Floor floor1, Floor floor2) {
+        return new Stair(floor1, floor2,
+                floor1.getRoomByUuid(jsonObject.getString("room1")),
+                floor2.getRoomByUuid(jsonObject.getString("room2")),
+                jsonObject.getJsonNumber("capacity").doubleValue(),
+                jsonObject.getJsonNumber("x").doubleValue(),
+                jsonObject.getJsonNumber("y").doubleValue());
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), floor1, floor2);
+        return Objects.hash(super.hashCode(), uuid, floor1, floor2);
     }
 
     @Override

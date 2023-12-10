@@ -10,6 +10,8 @@ module org.fii.buildingevacuationsimulator {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires org.jgrapht.core;
+    requires jakarta.json;
+    requires org.eclipse.parsson;
 
     opens org.fii.buildingevacuationsimulator to javafx.fxml;
     exports org.fii.buildingevacuationsimulator;
