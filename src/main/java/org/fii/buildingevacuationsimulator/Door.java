@@ -74,7 +74,7 @@ public class Door extends DefaultWeightedEdge {
         gc.fillOval(x - 5, y - 5, 10, 10);
         // draw capacity
         gc.setFill(Color.RED);
-        gc.fillText(String.valueOf(capacity), x - 10, y - 5);
+        gc.fillText(String.valueOf(capacity), x - 10, y - 10);
     }
 
     // export a door as a JSON object using the Json library

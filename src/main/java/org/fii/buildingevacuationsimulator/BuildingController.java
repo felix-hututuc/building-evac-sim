@@ -125,7 +125,6 @@ public class BuildingController {
                             }
                         }
                         room.setWidth(event.getX() - room.getX());
-
                 }
                 if (room.isDraggingLeft()) {
                     if (event.getX() > 0 && event.getX() < currentFloor.getCanvas().getWidth()) {
@@ -437,9 +436,62 @@ public class BuildingController {
                 System.out.println("Source not selected");
                 return;
             }
-            MaximumFlowAlgorithm<Room, Door> algorithm = new EdmondsKarpMFImpl<>(flowNetwork);
-            double maxFlow = algorithm.getMaximumFlow(source, sink).getValue();
+            EdmondsKarpMFImpl<Room, Door> algorithm = new EdmondsKarpMFImpl<>(flowNetwork);
+            var maxFlow = algorithm.calculateMaximumFlow(source, sink);
+            var flowMap = algorithm.getFlowMap();
+
             System.out.println(maxFlow);
+            for (var edge : flowNetwork.edgeSet()) {
+                var nextRoom = algorithm.getFlowDirection(edge);
+                if (nextRoom == null || flowMap.get(edge) == 0) {
+                    continue;
+                }
+
+                var xDoor = edge.getX();
+                var yDoor = edge.getY();
+                currentFloor.getCanvas().getGraphicsContext2D().setStroke(Color.RED);
+
+                if (nextRoom.isOnLeftEdge(xDoor, yDoor)) {
+                    currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor, xDoor + 20, yDoor);
+                    currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor + 20, yDoor, xDoor + 14, yDoor - 6);
+                    currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor + 20, yDoor, xDoor + 14, yDoor + 6);
+                } else if(nextRoom.isOnRightEdge(xDoor, yDoor)) {
+                    currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor, xDoor - 20, yDoor);
+                    currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor - 20, yDoor, xDoor - 14, yDoor - 6);
+                    currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor - 20, yDoor, xDoor - 14, yDoor + 6);
+                } else if (nextRoom.isOnTopEdge(xDoor, yDoor)) {
+                    currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor, xDoor, yDoor + 20);
+                    currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor + 20, xDoor - 6, yDoor + 14);
+                    currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor + 20, xDoor + 6, yDoor + 14);
+                } else if (nextRoom.isOnBottomEdge(xDoor, yDoor)) {
+                    currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor, xDoor, yDoor - 20);
+                    currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor - 20, xDoor - 6, yDoor - 14);
+                    currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor - 20, xDoor + 6, yDoor - 14);
+                } else if (nextRoom == sink) {
+                    Room sourceRoom = edge.getTarget() == nextRoom ? edge.getSource() : edge.getTarget();
+                    if (sourceRoom.isOnLeftEdge(xDoor, yDoor)) {
+                        currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor, xDoor - 20, yDoor);
+                        currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor - 20, yDoor, xDoor - 14, yDoor - 6);
+                        currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor - 20, yDoor, xDoor - 14, yDoor + 6);
+                    } else if (sourceRoom.isOnRightEdge(xDoor, yDoor)) {
+                        currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor, xDoor + 20, yDoor);
+                        currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor + 20, yDoor, xDoor + 14, yDoor - 6);
+                        currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor + 20, yDoor, xDoor + 14, yDoor + 6);
+                    } else if (sourceRoom.isOnTopEdge(xDoor, yDoor)) {
+                        currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor, xDoor, yDoor - 20);
+                        currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor - 20, xDoor - 6, yDoor - 14);
+                        currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor - 20, xDoor + 6, yDoor - 14);
+                    } else if (sourceRoom.isOnBottomEdge(xDoor, yDoor)) {
+                        currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor, xDoor, yDoor + 20);
+                        currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor + 20, xDoor - 6, yDoor + 14);
+                        currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor + 20, xDoor + 6, yDoor + 14);
+                    }
+                }
+                currentFloor.getCanvas().getGraphicsContext2D().setFill(Color.BLUE);
+                currentFloor.getCanvas().getGraphicsContext2D().fillText(String.valueOf(flowMap.get(edge)), xDoor - 10, yDoor + 15);
+
+                currentFloor.getCanvas().getGraphicsContext2D().setStroke(Color.BLACK);
+            }
         };
     }
 

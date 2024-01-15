@@ -125,11 +125,27 @@ public class Room {
         return x >= this.x && x <= this.x + this.width && y >= this.y && y <= this.y + this.height;
     }
 
+    public boolean isOnRightEdge(double x, double y) {
+        return x >= this.x + this.width - 5 && x <= this.x + this.width + 5 && y >= this.y && y <= this.y + this.height;
+    }
+
+    public boolean isOnLeftEdge(double x, double y) {
+        return x >= this.x - 5 && x <= this.x + 5 && y >= this.y && y <= this.y + this.height;
+    }
+
+    public boolean isOnTopEdge(double x, double y) {
+        return x >= this.x && x <= this.x + this.width && y >= this.y - 5 && y <= this.y + 5;
+    }
+
+    public boolean isOnBottomEdge(double x, double y) {
+        return x >= this.x && x <= this.x + this.width && y >= this.y + this.height - 5 && y <= this.y + this.height + 5;
+    }
+
     public boolean isOnEdge(double x, double y) {
-        return (x >= this.x && x <= this.x + this.width && y >= this.y - 5 && y <= this.y + 5) ||
-                (x >= this.x && x <= this.x + this.width && y >= this.y + this.height - 5 && y <= this.y + this.height + 5) ||
-                (x >= this.x - 5 && x <= this.x + 5 && y >= this.y && y <= this.y + this.height) ||
-                (x >= this.x + this.width - 5 && x <= this.x + this.width + 5 && y >= this.y && y <= this.y + this.height);
+        return isOnRightEdge(x, y) ||
+                isOnLeftEdge(x, y) ||
+                isOnTopEdge(x, y) ||
+                isOnBottomEdge(x, y);
     }
 
     public double[] getNearestEdge(double x, double y) {
