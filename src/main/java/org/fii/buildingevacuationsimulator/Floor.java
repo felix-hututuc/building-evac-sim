@@ -8,7 +8,9 @@ import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Floor {
     private final String uuid;
@@ -72,54 +74,20 @@ public class Floor {
             room.draw(canvas.getGraphicsContext2D());
         }
         for (Stair stair : stairs) {
-            stair.draw(canvas.getGraphicsContext2D());
+            if (stair.getFloor1().getFloorNumber() == floorNumber) {
+                stair.draw(canvas.getGraphicsContext2D());
+            }
         }
     }
 
-    //export as a json object using the json library
-//    public JsonObject toJson() {
-//        JsonArrayBuilder roomsBuilder = Json.createArrayBuilder();
-//        for (Room room : rooms) {
-//            roomsBuilder.add(room.toJson());
-//        }
-////        JsonArrayBuilder stairsBuilder = Json.createArrayBuilder();
-////        for (Stair stair : stairs) {
-////            stairsBuilder.add(stair.toJson());
-////        }
-//        return Json.createObjectBuilder()
-//                .add("floorNumber", floorNumber)
-//                .add("rooms", roomsBuilder.build())
-////                .add("stairs", stairsBuilder.build())
-//                .build();
-//    }
-//
-//    //import from a json object using the json library
-//    public static Floor fromJson(JsonObject jsonObject, Room sink) {
-//        Floor floor = new Floor(jsonObject.getInt("floorNumber"));
-//        // add all rooms
-////        floor.addRoom(sink);
-//        jsonObject.getJsonArray("rooms").forEach(roomJson -> {
-//            Room room = Room.fromJson((JsonObject) roomJson);
-//            floor.addRoom(room);
-//        });
-//        jsonObject.getJsonArray("rooms").forEach(roomJson -> {
-//            Room room = Room.fromJson((JsonObject) roomJson);
-//            for (String neighbourUuid : ((JsonObject) roomJson).getJsonArray("neighbours").getValuesAs(JsonString::getString)) {
-//                room.addNeighbour(floor.rooms.stream()
-//                        .filter(r -> r.getUuid().equals(neighbourUuid))
-//                        .findFirst()
-//                        .orElseThrow());
-//            }
-//            var doors = ((JsonObject) roomJson).getJsonArray("doors");
-//            for (var door : doors.getValuesAs(JsonObject.class)) {
-//                var doorObject = Door.fromJson(door, room);
-//                if (doorObject != null) {
-//                    room.addDoor(doorObject);
-//                }
-//            }
-//        });
-//        return floor;
-//    }
+    public Set<Door> getDoors() {
+        Set<Door> doors = new HashSet<>();
+        for (Room room : rooms) {
+            doors.addAll(room.getDoors());
+        }
+        doors.addAll(stairs);
+        return doors;
+    }
 
     public Room getRoomByUuid(String room1) {
         for (Room room : rooms) {

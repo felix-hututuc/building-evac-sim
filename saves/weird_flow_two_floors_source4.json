@@ -1,0 +1,746 @@
+{
+    "sink": {
+        "uuid": "904735db-3212-431f-bdc0-a178ae62f691",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "floor": -1
+    },
+    "floorsNr": 2,
+    "currentFloor": 0,
+    "rooms": [
+        {
+            "uuid": "0e53514d-537f-4143-91b0-abd12514831b",
+            "x": 300.0,
+            "y": 100.0,
+            "width": 172.0,
+            "height": 600.0,
+            "floor": 0
+        },
+        {
+            "uuid": "88a71caa-d8ae-485c-bcea-2956daaa5256",
+            "x": 472.0,
+            "y": 100.0,
+            "width": 276.0,
+            "height": 149.0,
+            "floor": 0
+        },
+        {
+            "uuid": "5f9e31d4-26e6-449e-b2bd-29f634b997c3",
+            "x": 748.0,
+            "y": 100.0,
+            "width": 152.0,
+            "height": 149.0,
+            "floor": 0
+        },
+        {
+            "uuid": "1cb54146-bc26-4435-93e0-f77eef622a94",
+            "x": 472.0,
+            "y": 249.0,
+            "width": 428.0,
+            "height": 218.0,
+            "floor": 0
+        },
+        {
+            "uuid": "1166412c-9df6-484d-abbc-54bb7d09e72e",
+            "x": 472.0,
+            "y": 467.0,
+            "width": 428.0,
+            "height": 233.0,
+            "floor": 0
+        },
+        {
+            "uuid": "eed08e46-8474-4cbb-bce1-35798eb33bce",
+            "x": 300.0,
+            "y": 240.0,
+            "width": 171.0,
+            "height": 460.0,
+            "floor": 1
+        },
+        {
+            "uuid": "6d835162-fc3a-4682-9969-2aec2e4b4194",
+            "x": 300.0,
+            "y": 100.0,
+            "width": 171.0,
+            "height": 140.0,
+            "floor": 1
+        },
+        {
+            "uuid": "0e9e3966-1b82-4e62-a11a-ebfc4019d290",
+            "x": 471.0,
+            "y": 100.0,
+            "width": 429.0,
+            "height": 140.0,
+            "floor": 1
+        },
+        {
+            "uuid": "6dcdf745-05ed-4d92-b871-83c6fe8ae54b",
+            "x": 471.0,
+            "y": 240.0,
+            "width": 140.0,
+            "height": 460.0,
+            "floor": 1
+        },
+        {
+            "uuid": "ac5c048a-ec64-4137-abcd-66f67eb45129",
+            "x": 611.0,
+            "y": 240.0,
+            "width": 289.0,
+            "height": 460.0,
+            "floor": 1
+        }
+    ],
+    "doors": [
+        {
+            "uuid": "c681c842-8eed-466e-904f-88e5e212e5c9",
+            "room1": "88a71caa-d8ae-485c-bcea-2956daaa5256",
+            "room2": "0e53514d-537f-4143-91b0-abd12514831b",
+            "capacity": 3.0,
+            "x": 472.0,
+            "y": 178.0
+        },
+        {
+            "uuid": "8e3d3247-2a15-4c79-929f-81d02cf920ad",
+            "room1": "1cb54146-bc26-4435-93e0-f77eef622a94",
+            "room2": "0e53514d-537f-4143-91b0-abd12514831b",
+            "capacity": 2.0,
+            "x": 472.0,
+            "y": 349.0
+        },
+        {
+            "uuid": "7725295c-324e-49ab-bf18-f0e0200cdc2f",
+            "floor1": 0,
+            "floor2": 1,
+            "room1": "0e53514d-537f-4143-91b0-abd12514831b",
+            "room2": "6d835162-fc3a-4682-9969-2aec2e4b4194",
+            "capacity": 1.0,
+            "x": 342.0,
+            "y": 143.0
+        },
+        {
+            "uuid": "1283b5bf-8847-4275-b430-7d5c939c1631",
+            "room1": "0e53514d-537f-4143-91b0-abd12514831b",
+            "room2": "88a71caa-d8ae-485c-bcea-2956daaa5256",
+            "capacity": 3.0,
+            "x": 472.0,
+            "y": 178.0
+        },
+        {
+            "uuid": "20dd2209-b407-4c0c-93d4-61e0475f38d1",
+            "room1": "0e53514d-537f-4143-91b0-abd12514831b",
+            "room2": "1cb54146-bc26-4435-93e0-f77eef622a94",
+            "capacity": 2.0,
+            "x": 472.0,
+            "y": 349.0
+        },
+        {
+            "uuid": "66f5db0c-2c69-441c-a2ca-dda63dfaee0f",
+            "floor1": 1,
+            "floor2": 0,
+            "room1": "6d835162-fc3a-4682-9969-2aec2e4b4194",
+            "room2": "0e53514d-537f-4143-91b0-abd12514831b",
+            "capacity": 1.0,
+            "x": 342.0,
+            "y": 143.0
+        },
+        {
+            "uuid": "c681c842-8eed-466e-904f-88e5e212e5c9",
+            "room1": "88a71caa-d8ae-485c-bcea-2956daaa5256",
+            "room2": "0e53514d-537f-4143-91b0-abd12514831b",
+            "capacity": 3.0,
+            "x": 472.0,
+            "y": 178.0
+        },
+        {
+            "uuid": "f98541d7-f049-4d3c-ae92-35b6ce1935ff",
+            "room1": "88a71caa-d8ae-485c-bcea-2956daaa5256",
+            "room2": "5f9e31d4-26e6-449e-b2bd-29f634b997c3",
+            "capacity": 2.0,
+            "x": 748.0,
+            "y": 167.0
+        },
+        {
+            "uuid": "1283b5bf-8847-4275-b430-7d5c939c1631",
+            "room1": "0e53514d-537f-4143-91b0-abd12514831b",
+            "room2": "88a71caa-d8ae-485c-bcea-2956daaa5256",
+            "capacity": 3.0,
+            "x": 472.0,
+            "y": 178.0
+        },
+        {
+            "uuid": "5be0f969-c678-48f1-af79-4330c30b5f2a",
+            "room1": "88a71caa-d8ae-485c-bcea-2956daaa5256",
+            "room2": "1cb54146-bc26-4435-93e0-f77eef622a94",
+            "capacity": 2.0,
+            "x": 605.0,
+            "y": 249.0
+        },
+        {
+            "uuid": "7e3655d8-1567-4724-b902-ae38893714a2",
+            "room1": "5f9e31d4-26e6-449e-b2bd-29f634b997c3",
+            "room2": "88a71caa-d8ae-485c-bcea-2956daaa5256",
+            "capacity": 2.0,
+            "x": 748.0,
+            "y": 167.0
+        },
+        {
+            "uuid": "9c906f41-d008-43b2-8783-f992a438b3b8",
+            "room1": "1cb54146-bc26-4435-93e0-f77eef622a94",
+            "room2": "88a71caa-d8ae-485c-bcea-2956daaa5256",
+            "capacity": 2.0,
+            "x": 605.0,
+            "y": 249.0
+        },
+        {
+            "uuid": "f98541d7-f049-4d3c-ae92-35b6ce1935ff",
+            "room1": "88a71caa-d8ae-485c-bcea-2956daaa5256",
+            "room2": "5f9e31d4-26e6-449e-b2bd-29f634b997c3",
+            "capacity": 2.0,
+            "x": 748.0,
+            "y": 167.0
+        },
+        {
+            "uuid": "7e3655d8-1567-4724-b902-ae38893714a2",
+            "room1": "5f9e31d4-26e6-449e-b2bd-29f634b997c3",
+            "room2": "88a71caa-d8ae-485c-bcea-2956daaa5256",
+            "capacity": 2.0,
+            "x": 748.0,
+            "y": 167.0
+        },
+        {
+            "uuid": "32bf9ca5-7e6b-4ce8-ac80-c2452eb98398",
+            "room1": "5f9e31d4-26e6-449e-b2bd-29f634b997c3",
+            "room2": "1cb54146-bc26-4435-93e0-f77eef622a94",
+            "capacity": 1.0,
+            "x": 820.0,
+            "y": 249.0
+        },
+        {
+            "uuid": "d6252968-dac4-453e-a722-372cf6cbfe81",
+            "room1": "1cb54146-bc26-4435-93e0-f77eef622a94",
+            "room2": "5f9e31d4-26e6-449e-b2bd-29f634b997c3",
+            "capacity": 1.0,
+            "x": 820.0,
+            "y": 249.0
+        },
+        {
+            "uuid": "cf41049b-dddd-45c2-ba2b-a586b1d81016",
+            "room1": "1cb54146-bc26-4435-93e0-f77eef622a94",
+            "room2": "904735db-3212-431f-bdc0-a178ae62f691",
+            "capacity": 3.0,
+            "x": 900.0,
+            "y": 353.0
+        },
+        {
+            "uuid": "5d3af016-e283-4894-9f41-f158c22d8db6",
+            "room1": "1cb54146-bc26-4435-93e0-f77eef622a94",
+            "room2": "1166412c-9df6-484d-abbc-54bb7d09e72e",
+            "capacity": 1.0,
+            "x": 690.0,
+            "y": 467.0
+        },
+        {
+            "uuid": "8e3d3247-2a15-4c79-929f-81d02cf920ad",
+            "room1": "1cb54146-bc26-4435-93e0-f77eef622a94",
+            "room2": "0e53514d-537f-4143-91b0-abd12514831b",
+            "capacity": 2.0,
+            "x": 472.0,
+            "y": 349.0
+        },
+        {
+            "uuid": "5be0f969-c678-48f1-af79-4330c30b5f2a",
+            "room1": "88a71caa-d8ae-485c-bcea-2956daaa5256",
+            "room2": "1cb54146-bc26-4435-93e0-f77eef622a94",
+            "capacity": 2.0,
+            "x": 605.0,
+            "y": 249.0
+        },
+        {
+            "uuid": "32bf9ca5-7e6b-4ce8-ac80-c2452eb98398",
+            "room1": "5f9e31d4-26e6-449e-b2bd-29f634b997c3",
+            "room2": "1cb54146-bc26-4435-93e0-f77eef622a94",
+            "capacity": 1.0,
+            "x": 820.0,
+            "y": 249.0
+        },
+        {
+            "uuid": "d73a1ef2-ed57-4c96-b248-f5642e439260",
+            "room1": "1166412c-9df6-484d-abbc-54bb7d09e72e",
+            "room2": "1cb54146-bc26-4435-93e0-f77eef622a94",
+            "capacity": 1.0,
+            "x": 690.0,
+            "y": 467.0
+        },
+        {
+            "uuid": "20dd2209-b407-4c0c-93d4-61e0475f38d1",
+            "room1": "0e53514d-537f-4143-91b0-abd12514831b",
+            "room2": "1cb54146-bc26-4435-93e0-f77eef622a94",
+            "capacity": 2.0,
+            "x": 472.0,
+            "y": 349.0
+        },
+        {
+            "uuid": "015fd4ed-8d62-455a-8f70-00b35b54bc46",
+            "floor1": 1,
+            "floor2": 0,
+            "room1": "ac5c048a-ec64-4137-abcd-66f67eb45129",
+            "room2": "1cb54146-bc26-4435-93e0-f77eef622a94",
+            "capacity": 2.0,
+            "x": 710.0,
+            "y": 363.0
+        },
+        {
+            "uuid": "41c1f0b3-0a4d-4bee-b843-015d1c120d26",
+            "floor1": 0,
+            "floor2": 1,
+            "room1": "1cb54146-bc26-4435-93e0-f77eef622a94",
+            "room2": "ac5c048a-ec64-4137-abcd-66f67eb45129",
+            "capacity": 2.0,
+            "x": 710.0,
+            "y": 363.0
+        },
+        {
+            "uuid": "d6252968-dac4-453e-a722-372cf6cbfe81",
+            "room1": "1cb54146-bc26-4435-93e0-f77eef622a94",
+            "room2": "5f9e31d4-26e6-449e-b2bd-29f634b997c3",
+            "capacity": 1.0,
+            "x": 820.0,
+            "y": 249.0
+        },
+        {
+            "uuid": "9c906f41-d008-43b2-8783-f992a438b3b8",
+            "room1": "1cb54146-bc26-4435-93e0-f77eef622a94",
+            "room2": "88a71caa-d8ae-485c-bcea-2956daaa5256",
+            "capacity": 2.0,
+            "x": 605.0,
+            "y": 249.0
+        },
+        {
+            "uuid": "5d3af016-e283-4894-9f41-f158c22d8db6",
+            "room1": "1cb54146-bc26-4435-93e0-f77eef622a94",
+            "room2": "1166412c-9df6-484d-abbc-54bb7d09e72e",
+            "capacity": 1.0,
+            "x": 690.0,
+            "y": 467.0
+        },
+        {
+            "uuid": "6508154e-e24d-4c40-a4c0-26435078e583",
+            "floor1": 0,
+            "floor2": 1,
+            "room1": "1166412c-9df6-484d-abbc-54bb7d09e72e",
+            "room2": "6dcdf745-05ed-4d92-b871-83c6fe8ae54b",
+            "capacity": 4.0,
+            "x": 527.0,
+            "y": 597.0
+        },
+        {
+            "uuid": "d1c97abb-6ff2-45b2-b6cb-947d2d702af8",
+            "room1": "1166412c-9df6-484d-abbc-54bb7d09e72e",
+            "room2": "904735db-3212-431f-bdc0-a178ae62f691",
+            "capacity": 2.0,
+            "x": 900.0,
+            "y": 587.0
+        },
+        {
+            "uuid": "d73a1ef2-ed57-4c96-b248-f5642e439260",
+            "room1": "1166412c-9df6-484d-abbc-54bb7d09e72e",
+            "room2": "1cb54146-bc26-4435-93e0-f77eef622a94",
+            "capacity": 1.0,
+            "x": 690.0,
+            "y": 467.0
+        },
+        {
+            "uuid": "216b54d0-789e-4438-9b95-fa87ac3ca862",
+            "floor1": 1,
+            "floor2": 0,
+            "room1": "6dcdf745-05ed-4d92-b871-83c6fe8ae54b",
+            "room2": "1166412c-9df6-484d-abbc-54bb7d09e72e",
+            "capacity": 4.0,
+            "x": 527.0,
+            "y": 597.0
+        },
+        {
+            "uuid": "b805d82e-ea68-4a9b-9fe6-222803a99fbb",
+            "room1": "eed08e46-8474-4cbb-bce1-35798eb33bce",
+            "room2": "6d835162-fc3a-4682-9969-2aec2e4b4194",
+            "capacity": 2.0,
+            "x": 381.0,
+            "y": 240.0
+        },
+        {
+            "uuid": "1f2393ff-60d1-498c-9124-db3ac85b5a15",
+            "room1": "eed08e46-8474-4cbb-bce1-35798eb33bce",
+            "room2": "6dcdf745-05ed-4d92-b871-83c6fe8ae54b",
+            "capacity": 2.0,
+            "x": 471.0,
+            "y": 404.0
+        },
+        {
+            "uuid": "433a5ce5-65e9-4c68-8fa3-662f29925b49",
+            "room1": "eed08e46-8474-4cbb-bce1-35798eb33bce",
+            "room2": "904735db-3212-431f-bdc0-a178ae62f691",
+            "capacity": 1.0,
+            "x": 300.0,
+            "y": 451.0
+        },
+        {
+            "uuid": "a73e080d-01bc-40f3-93d2-295e76a4d5e3",
+            "room1": "6dcdf745-05ed-4d92-b871-83c6fe8ae54b",
+            "room2": "eed08e46-8474-4cbb-bce1-35798eb33bce",
+            "capacity": 2.0,
+            "x": 471.0,
+            "y": 404.0
+        },
+        {
+            "uuid": "c3aa3cf2-a4eb-41ae-aaf4-0be008893e21",
+            "room1": "6d835162-fc3a-4682-9969-2aec2e4b4194",
+            "room2": "eed08e46-8474-4cbb-bce1-35798eb33bce",
+            "capacity": 2.0,
+            "x": 381.0,
+            "y": 240.0
+        },
+        {
+            "uuid": "b805d82e-ea68-4a9b-9fe6-222803a99fbb",
+            "room1": "eed08e46-8474-4cbb-bce1-35798eb33bce",
+            "room2": "6d835162-fc3a-4682-9969-2aec2e4b4194",
+            "capacity": 2.0,
+            "x": 381.0,
+            "y": 240.0
+        },
+        {
+            "uuid": "fc47507b-116f-40af-bd50-2e213e29747c",
+            "room1": "0e9e3966-1b82-4e62-a11a-ebfc4019d290",
+            "room2": "6d835162-fc3a-4682-9969-2aec2e4b4194",
+            "capacity": 1.0,
+            "x": 471.0,
+            "y": 167.0
+        },
+        {
+            "uuid": "7725295c-324e-49ab-bf18-f0e0200cdc2f",
+            "floor1": 0,
+            "floor2": 1,
+            "room1": "0e53514d-537f-4143-91b0-abd12514831b",
+            "room2": "6d835162-fc3a-4682-9969-2aec2e4b4194",
+            "capacity": 1.0,
+            "x": 342.0,
+            "y": 143.0
+        },
+        {
+            "uuid": "f461e07d-c638-4757-a747-90ca25932ece",
+            "room1": "6d835162-fc3a-4682-9969-2aec2e4b4194",
+            "room2": "0e9e3966-1b82-4e62-a11a-ebfc4019d290",
+            "capacity": 1.0,
+            "x": 471.0,
+            "y": 167.0
+        },
+        {
+            "uuid": "c3aa3cf2-a4eb-41ae-aaf4-0be008893e21",
+            "room1": "6d835162-fc3a-4682-9969-2aec2e4b4194",
+            "room2": "eed08e46-8474-4cbb-bce1-35798eb33bce",
+            "capacity": 2.0,
+            "x": 381.0,
+            "y": 240.0
+        },
+        {
+            "uuid": "66f5db0c-2c69-441c-a2ca-dda63dfaee0f",
+            "floor1": 1,
+            "floor2": 0,
+            "room1": "6d835162-fc3a-4682-9969-2aec2e4b4194",
+            "room2": "0e53514d-537f-4143-91b0-abd12514831b",
+            "capacity": 1.0,
+            "x": 342.0,
+            "y": 143.0
+        },
+        {
+            "uuid": "8e9da067-1cf5-42ed-b2aa-619383c66327",
+            "room1": "6dcdf745-05ed-4d92-b871-83c6fe8ae54b",
+            "room2": "0e9e3966-1b82-4e62-a11a-ebfc4019d290",
+            "capacity": 1.0,
+            "x": 554.0,
+            "y": 240.0
+        },
+        {
+            "uuid": "fc47507b-116f-40af-bd50-2e213e29747c",
+            "room1": "0e9e3966-1b82-4e62-a11a-ebfc4019d290",
+            "room2": "6d835162-fc3a-4682-9969-2aec2e4b4194",
+            "capacity": 1.0,
+            "x": 471.0,
+            "y": 167.0
+        },
+        {
+            "uuid": "e28c828c-42ea-48c7-a2f2-4a03d534218f",
+            "room1": "0e9e3966-1b82-4e62-a11a-ebfc4019d290",
+            "room2": "ac5c048a-ec64-4137-abcd-66f67eb45129",
+            "capacity": 2.0,
+            "x": 737.0,
+            "y": 240.0
+        },
+        {
+            "uuid": "a68b028c-e3ae-4604-bb41-0ddfc441982e",
+            "room1": "0e9e3966-1b82-4e62-a11a-ebfc4019d290",
+            "room2": "6dcdf745-05ed-4d92-b871-83c6fe8ae54b",
+            "capacity": 1.0,
+            "x": 554.0,
+            "y": 240.0
+        },
+        {
+            "uuid": "f461e07d-c638-4757-a747-90ca25932ece",
+            "room1": "6d835162-fc3a-4682-9969-2aec2e4b4194",
+            "room2": "0e9e3966-1b82-4e62-a11a-ebfc4019d290",
+            "capacity": 1.0,
+            "x": 471.0,
+            "y": 167.0
+        },
+        {
+            "uuid": "cd16f8cf-bfe5-406e-aa92-8ff57819914c",
+            "room1": "ac5c048a-ec64-4137-abcd-66f67eb45129",
+            "room2": "0e9e3966-1b82-4e62-a11a-ebfc4019d290",
+            "capacity": 2.0,
+            "x": 737.0,
+            "y": 240.0
+        },
+        {
+            "uuid": "8e9da067-1cf5-42ed-b2aa-619383c66327",
+            "room1": "6dcdf745-05ed-4d92-b871-83c6fe8ae54b",
+            "room2": "0e9e3966-1b82-4e62-a11a-ebfc4019d290",
+            "capacity": 1.0,
+            "x": 554.0,
+            "y": 240.0
+        },
+        {
+            "uuid": "1f2393ff-60d1-498c-9124-db3ac85b5a15",
+            "room1": "eed08e46-8474-4cbb-bce1-35798eb33bce",
+            "room2": "6dcdf745-05ed-4d92-b871-83c6fe8ae54b",
+            "capacity": 2.0,
+            "x": 471.0,
+            "y": 404.0
+        },
+        {
+            "uuid": "a68b028c-e3ae-4604-bb41-0ddfc441982e",
+            "room1": "0e9e3966-1b82-4e62-a11a-ebfc4019d290",
+            "room2": "6dcdf745-05ed-4d92-b871-83c6fe8ae54b",
+            "capacity": 1.0,
+            "x": 554.0,
+            "y": 240.0
+        },
+        {
+            "uuid": "a73e080d-01bc-40f3-93d2-295e76a4d5e3",
+            "room1": "6dcdf745-05ed-4d92-b871-83c6fe8ae54b",
+            "room2": "eed08e46-8474-4cbb-bce1-35798eb33bce",
+            "capacity": 2.0,
+            "x": 471.0,
+            "y": 404.0
+        },
+        {
+            "uuid": "6508154e-e24d-4c40-a4c0-26435078e583",
+            "floor1": 0,
+            "floor2": 1,
+            "room1": "1166412c-9df6-484d-abbc-54bb7d09e72e",
+            "room2": "6dcdf745-05ed-4d92-b871-83c6fe8ae54b",
+            "capacity": 4.0,
+            "x": 527.0,
+            "y": 597.0
+        },
+        {
+            "uuid": "216b54d0-789e-4438-9b95-fa87ac3ca862",
+            "floor1": 1,
+            "floor2": 0,
+            "room1": "6dcdf745-05ed-4d92-b871-83c6fe8ae54b",
+            "room2": "1166412c-9df6-484d-abbc-54bb7d09e72e",
+            "capacity": 4.0,
+            "x": 527.0,
+            "y": 597.0
+        },
+        {
+            "uuid": "196b5805-7294-4367-bd75-9e7d06d158a2",
+            "room1": "6dcdf745-05ed-4d92-b871-83c6fe8ae54b",
+            "room2": "ac5c048a-ec64-4137-abcd-66f67eb45129",
+            "capacity": 2.0,
+            "x": 611.0,
+            "y": 418.0
+        },
+        {
+            "uuid": "756f0083-fb5c-4768-8e0d-c61e8e7cba18",
+            "room1": "ac5c048a-ec64-4137-abcd-66f67eb45129",
+            "room2": "6dcdf745-05ed-4d92-b871-83c6fe8ae54b",
+            "capacity": 2.0,
+            "x": 611.0,
+            "y": 418.0
+        },
+        {
+            "uuid": "e28c828c-42ea-48c7-a2f2-4a03d534218f",
+            "room1": "0e9e3966-1b82-4e62-a11a-ebfc4019d290",
+            "room2": "ac5c048a-ec64-4137-abcd-66f67eb45129",
+            "capacity": 2.0,
+            "x": 737.0,
+            "y": 240.0
+        },
+        {
+            "uuid": "015fd4ed-8d62-455a-8f70-00b35b54bc46",
+            "floor1": 1,
+            "floor2": 0,
+            "room1": "ac5c048a-ec64-4137-abcd-66f67eb45129",
+            "room2": "1cb54146-bc26-4435-93e0-f77eef622a94",
+            "capacity": 2.0,
+            "x": 710.0,
+            "y": 363.0
+        },
+        {
+            "uuid": "41c1f0b3-0a4d-4bee-b843-015d1c120d26",
+            "floor1": 0,
+            "floor2": 1,
+            "room1": "1cb54146-bc26-4435-93e0-f77eef622a94",
+            "room2": "ac5c048a-ec64-4137-abcd-66f67eb45129",
+            "capacity": 2.0,
+            "x": 710.0,
+            "y": 363.0
+        },
+        {
+            "uuid": "196b5805-7294-4367-bd75-9e7d06d158a2",
+            "room1": "6dcdf745-05ed-4d92-b871-83c6fe8ae54b",
+            "room2": "ac5c048a-ec64-4137-abcd-66f67eb45129",
+            "capacity": 2.0,
+            "x": 611.0,
+            "y": 418.0
+        },
+        {
+            "uuid": "756f0083-fb5c-4768-8e0d-c61e8e7cba18",
+            "room1": "ac5c048a-ec64-4137-abcd-66f67eb45129",
+            "room2": "6dcdf745-05ed-4d92-b871-83c6fe8ae54b",
+            "capacity": 2.0,
+            "x": 611.0,
+            "y": 418.0
+        },
+        {
+            "uuid": "cd16f8cf-bfe5-406e-aa92-8ff57819914c",
+            "room1": "ac5c048a-ec64-4137-abcd-66f67eb45129",
+            "room2": "0e9e3966-1b82-4e62-a11a-ebfc4019d290",
+            "capacity": 2.0,
+            "x": 737.0,
+            "y": 240.0
+        }
+    ],
+    "stairs": [
+        {
+            "uuid": "015fd4ed-8d62-455a-8f70-00b35b54bc46",
+            "floor1": 1,
+            "floor2": 0,
+            "room1": "ac5c048a-ec64-4137-abcd-66f67eb45129",
+            "room2": "1cb54146-bc26-4435-93e0-f77eef622a94",
+            "capacity": 2.0,
+            "x": 710.0,
+            "y": 363.0
+        },
+        {
+            "uuid": "41c1f0b3-0a4d-4bee-b843-015d1c120d26",
+            "floor1": 0,
+            "floor2": 1,
+            "room1": "1cb54146-bc26-4435-93e0-f77eef622a94",
+            "room2": "ac5c048a-ec64-4137-abcd-66f67eb45129",
+            "capacity": 2.0,
+            "x": 710.0,
+            "y": 363.0
+        },
+        {
+            "uuid": "66f5db0c-2c69-441c-a2ca-dda63dfaee0f",
+            "floor1": 1,
+            "floor2": 0,
+            "room1": "6d835162-fc3a-4682-9969-2aec2e4b4194",
+            "room2": "0e53514d-537f-4143-91b0-abd12514831b",
+            "capacity": 1.0,
+            "x": 342.0,
+            "y": 143.0
+        },
+        {
+            "uuid": "7725295c-324e-49ab-bf18-f0e0200cdc2f",
+            "floor1": 0,
+            "floor2": 1,
+            "room1": "0e53514d-537f-4143-91b0-abd12514831b",
+            "room2": "6d835162-fc3a-4682-9969-2aec2e4b4194",
+            "capacity": 1.0,
+            "x": 342.0,
+            "y": 143.0
+        },
+        {
+            "uuid": "216b54d0-789e-4438-9b95-fa87ac3ca862",
+            "floor1": 1,
+            "floor2": 0,
+            "room1": "6dcdf745-05ed-4d92-b871-83c6fe8ae54b",
+            "room2": "1166412c-9df6-484d-abbc-54bb7d09e72e",
+            "capacity": 4.0,
+            "x": 527.0,
+            "y": 597.0
+        },
+        {
+            "uuid": "6508154e-e24d-4c40-a4c0-26435078e583",
+            "floor1": 0,
+            "floor2": 1,
+            "room1": "1166412c-9df6-484d-abbc-54bb7d09e72e",
+            "room2": "6dcdf745-05ed-4d92-b871-83c6fe8ae54b",
+            "capacity": 4.0,
+            "x": 527.0,
+            "y": 597.0
+        },
+        {
+            "uuid": "015fd4ed-8d62-455a-8f70-00b35b54bc46",
+            "floor1": 1,
+            "floor2": 0,
+            "room1": "ac5c048a-ec64-4137-abcd-66f67eb45129",
+            "room2": "1cb54146-bc26-4435-93e0-f77eef622a94",
+            "capacity": 2.0,
+            "x": 710.0,
+            "y": 363.0
+        },
+        {
+            "uuid": "41c1f0b3-0a4d-4bee-b843-015d1c120d26",
+            "floor1": 0,
+            "floor2": 1,
+            "room1": "1cb54146-bc26-4435-93e0-f77eef622a94",
+            "room2": "ac5c048a-ec64-4137-abcd-66f67eb45129",
+            "capacity": 2.0,
+            "x": 710.0,
+            "y": 363.0
+        },
+        {
+            "uuid": "66f5db0c-2c69-441c-a2ca-dda63dfaee0f",
+            "floor1": 1,
+            "floor2": 0,
+            "room1": "6d835162-fc3a-4682-9969-2aec2e4b4194",
+            "room2": "0e53514d-537f-4143-91b0-abd12514831b",
+            "capacity": 1.0,
+            "x": 342.0,
+            "y": 143.0
+        },
+        {
+            "uuid": "7725295c-324e-49ab-bf18-f0e0200cdc2f",
+            "floor1": 0,
+            "floor2": 1,
+            "room1": "0e53514d-537f-4143-91b0-abd12514831b",
+            "room2": "6d835162-fc3a-4682-9969-2aec2e4b4194",
+            "capacity": 1.0,
+            "x": 342.0,
+            "y": 143.0
+        },
+        {
+            "uuid": "216b54d0-789e-4438-9b95-fa87ac3ca862",
+            "floor1": 1,
+            "floor2": 0,
+            "room1": "6dcdf745-05ed-4d92-b871-83c6fe8ae54b",
+            "room2": "1166412c-9df6-484d-abbc-54bb7d09e72e",
+            "capacity": 4.0,
+            "x": 527.0,
+            "y": 597.0
+        },
+        {
+            "uuid": "6508154e-e24d-4c40-a4c0-26435078e583",
+            "floor1": 0,
+            "floor2": 1,
+            "room1": "1166412c-9df6-484d-abbc-54bb7d09e72e",
+            "room2": "6dcdf745-05ed-4d92-b871-83c6fe8ae54b",
+            "capacity": 4.0,
+            "x": 527.0,
+            "y": 597.0
+        }
+    ]
+}

@@ -38,16 +38,20 @@ public class Stair extends Door {
     public void draw(GraphicsContext gc) {
         gc.setFill(Color.BLACK);
         if (floor1.getFloorNumber() > floor2.getFloorNumber()) {
-            gc.strokeLine(getX(), getY(), getX(), getY() + 20);
-            gc.strokeLine(getX(), getY() + 20, getX() - 6, getY() + 14);
-            gc.strokeLine(getX(), getY() + 20, getX() + 6, getY() + 14);
+            gc.strokeLine(getX(), getY(), getX() + 10, getY());
+            gc.strokeLine(getX() + 10, getY(), getX() + 10, getY() + 10);
+            gc.strokeLine(getX() + 10, getY() + 10, getX() + 20, getY() + 10);
+            gc.strokeLine(getX() + 20, getY() + 10, getX() + 20, getY() + 20);
+//            gc.strokeLine(getX(), getY() + 20, getX() - 6, getY() + 14);
+//            gc.strokeLine(getX(), getY() + 20, getX() + 6, getY() + 14);
         } else {
-            gc.strokeLine(getX(), getY(), getX(), getY() - 20);
-            gc.strokeLine(getX(), getY() - 20, getX() - 6, getY() - 14);
-            gc.strokeLine(getX(), getY() - 20, getX() + 6, getY() - 14);
+            gc.strokeLine(getX(), getY(), getX(), getY() - 10);
+            gc.strokeLine(getX(), getY() - 10, getX() + 10, getY() - 10);
+            gc.strokeLine(getX() + 10, getY() - 10, getX() + 10, getY() - 20);
+            gc.strokeLine(getX() + 10, getY() - 20, getX() + 20, getY() - 20);
         }
         gc.setFill(Color.RED);
-        gc.fillText(String.valueOf(getWeight()), getX() + 5, getY() + 5);
+        gc.fillText(String.valueOf(getWeight()), getX() + 15, getY() + 5);
     }
 
     @Override

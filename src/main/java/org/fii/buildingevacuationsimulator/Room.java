@@ -204,7 +204,9 @@ public class Room {
     public void draw(GraphicsContext gc) {
         gc.strokeRect(x, y, width, height);
         for (var door : doors) {
-            door.draw(gc);
+            if ((door.getClass() == Stair.class && ((Stair) door).getFloor1().getFloorNumber() == floorNumber) || door.getClass() == Door.class) {
+                door.draw(gc);
+            }
         }
     }
 
@@ -234,5 +236,9 @@ public class Room {
 
     public int getFloorNumber() {
         return floorNumber;
+    }
+
+    public void removeDoor(Door stair) {
+        doors.remove(stair);
     }
 }
