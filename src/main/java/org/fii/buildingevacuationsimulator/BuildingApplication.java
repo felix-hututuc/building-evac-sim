@@ -57,6 +57,10 @@ public class BuildingApplication extends Application {
         menuButton.getItems().add(newFloorButton);
         toolBar.getItems().add(menuButton);
 
+        Button removeDoorButton = new Button("Remove Door");
+        removeDoorButton.setOnAction(buildingController.removeDoorHandle());
+        toolBar.getItems().add(removeDoorButton);
+
         Button exportButton = new Button("Export");
         exportButton.setOnAction(buildingController.exportHandle());
         toolBar.getItems().add(exportButton);
@@ -64,6 +68,10 @@ public class BuildingApplication extends Application {
         Button importButton = new Button("Import");
         importButton.setOnAction(buildingController.importHandle(root));
         toolBar.getItems().add(importButton);
+
+        Button resetButton = new Button("Reset");
+        resetButton.setOnAction(buildingController.resetHandle(root));
+        toolBar.getItems().add(resetButton);
 
         root.setCenter(buildingController.getCanvas());
         root.setTop(toolBar);

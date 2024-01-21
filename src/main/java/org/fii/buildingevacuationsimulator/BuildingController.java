@@ -558,7 +558,6 @@ public class BuildingController {
                         }
                     } else if (edge.getClass() == Stair.class) {
                         if (edge.getSource().getFloorNumber() > edge.getTarget().getFloorNumber()) {
-                            System.out.println("dsadas");
                             currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor, xDoor, yDoor + 20);
                             currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor + 20, xDoor - 6, yDoor + 14);
                             currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor + 20, xDoor + 6, yDoor + 14);
@@ -568,7 +567,6 @@ public class BuildingController {
                             currentFloor.getCanvas().getGraphicsContext2D().setStroke(Color.RED);
 
                         } else {
-                            System.out.println("fasdas");
                             currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor, xDoor, yDoor - 20);
                             currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor - 20, xDoor - 6, yDoor - 14);
                             currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor - 20, xDoor + 6, yDoor - 14);
@@ -821,6 +819,59 @@ public class BuildingController {
                     System.out.println("Error while opening file");
                 }
             }
+        };
+    }
+
+    public EventHandler<ActionEvent> removeDoorHandle() {
+        return event -> {
+            currentFloor.getCanvas().setOnMousePressed(removeDoorClickCanvasHandle());
+            currentFloor.getCanvas().setOnMouseReleased(event1 -> {
+                currentFloor.getCanvas().setOnMousePressed(canvasClickResize());
+                currentFloor.getCanvas().setOnMouseReleased(canvasClickRelease());
+                currentFloor.getCanvas().setOnMouseDragged(canvasDragResize());
+            });
+        };
+    }
+
+    public EventHandler<MouseEvent> removeDoorClickCanvasHandle() {
+        return event -> {
+            var x = event.getX();
+            var y = event.getY();
+            for (var Door : currentFloor.getDoors()) {
+                if (x <= Door.getX() + 5 && x >= Door.getX() - 5 && y <= Door.getY() + 5 && y >= Door.getY() - 5) {
+                    Door.getSource().removeDoor(Door);
+                    Door.getTarget().removeDoor(Door);
+                    if (Door.getClass() == Stair.class) {
+                        ((Stair) Door).getFloor1().removeStair((Stair) Door);
+                        ((Stair) Door).getFloor2().removeStair((Stair) Door);
+                    }
+                    flowNetwork.removeEdge(Door);
+                    System.out.println("Door removed");
+                }
+            }
+            draw();
+        };
+    }
+
+    public EventHandler<ActionEvent> resetHandle(BorderPane root) {
+        return event -> {
+            floors.clear();
+            currentFloor = new Floor(0);
+            floors.add(currentFloor);
+            flowNetwork = new DirectedWeightedMultigraph<>(Door.class);
+            sink = new Room(0, 0, 0, 0, 0);
+            flowNetwork.addVertex(sink);
+
+            Room firstRoom = new Room(300, 100, 600, 600, 0);
+            currentFloor.addRoom(firstRoom);
+            flowNetwork.addVertex(firstRoom);
+
+            draw();
+            root.setCenter(currentFloor.getCanvas());
+
+            currentFloor.getCanvas().setOnMousePressed(canvasClickResize());
+            currentFloor.getCanvas().setOnMouseReleased(canvasClickRelease());
+            currentFloor.getCanvas().setOnMouseDragged(canvasDragResize());
         };
     }
 }
