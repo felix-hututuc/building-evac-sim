@@ -73,6 +73,7 @@ public class BuildingApplication extends Application {
         resetButton.setOnAction(buildingController.resetHandle(root));
         toolBar.getItems().add(resetButton);
 
+        root.setStyle("-fx-background-color: #434649");
         root.setCenter(buildingController.getCanvas());
         root.setTop(toolBar);
         Scene scene = new Scene(root);

@@ -578,7 +578,7 @@ public class BuildingController {
                         }
                     }
 
-                    currentFloor.getCanvas().getGraphicsContext2D().setStroke(Color.BLACK);
+                    currentFloor.getCanvas().getGraphicsContext2D().setStroke(Color.WHITE);
                 } catch (IllegalArgumentException e) {
                     System.out.println("Edge not in flow network");
                     System.out.println(edge.getWeight());

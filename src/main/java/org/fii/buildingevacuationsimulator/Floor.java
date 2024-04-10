@@ -22,13 +22,16 @@ public class Floor {
     public Floor (int floorNumber) {
         this.uuid = java.util.UUID.randomUUID().toString();
         this.floorNumber = floorNumber;
-        this.canvas.getGraphicsContext2D().setStroke(Color.BLACK);
+        this.canvas.getGraphicsContext2D().setFill(Color.BLACK);
+        this.canvas.getGraphicsContext2D().setStroke(Color.WHITE);
     }
 
     public Floor (String uuid, int floorNumber) {
         this.uuid = uuid;
         this.floorNumber = floorNumber;
-        this.canvas.getGraphicsContext2D().setStroke(Color.BLACK);
+        this.canvas.getGraphicsContext2D().setFill(Color.BLACK);
+        this.canvas.getGraphicsContext2D().setStroke(Color.WHITE);
+
     }
 
     public int getFloorNumber() {

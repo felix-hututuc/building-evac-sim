@@ -202,7 +202,10 @@ public class Room {
     }
 
     public void draw(GraphicsContext gc) {
+        gc.setLineWidth(3);
         gc.strokeRect(x, y, width, height);
+        gc.setLineWidth(1);
+
         for (var door : doors) {
             if ((door.getClass() == Stair.class && ((Stair) door).getFloor1().getFloorNumber() == floorNumber) || door.getClass() == Door.class) {
                 door.draw(gc);
