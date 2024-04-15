@@ -207,7 +207,9 @@ public class Room {
         gc.setLineWidth(1);
 
         for (var door : doors) {
-            if ((door.getClass() == Stair.class && ((Stair) door).getFloor1().getFloorNumber() == floorNumber) || door.getClass() == Door.class) {
+            if (door.getClass() == Stair.class) {
+                ((Stair) door).draw(gc, floorNumber);
+            } else {
                 door.draw(gc);
             }
         }

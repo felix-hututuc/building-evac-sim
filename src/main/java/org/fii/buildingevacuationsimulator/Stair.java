@@ -34,16 +34,13 @@ public class Stair extends Door {
         return floor2;
     }
 
-    @Override
-    public void draw(GraphicsContext gc) {
+    public void draw(GraphicsContext gc, int currentFloor) {
         gc.setFill(Color.BLACK);
-        if (floor1.getFloorNumber() > floor2.getFloorNumber()) {
+        if (currentFloor == floor2.getFloorNumber()) {
             gc.strokeLine(getX(), getY(), getX() + 10, getY());
             gc.strokeLine(getX() + 10, getY(), getX() + 10, getY() + 10);
             gc.strokeLine(getX() + 10, getY() + 10, getX() + 20, getY() + 10);
             gc.strokeLine(getX() + 20, getY() + 10, getX() + 20, getY() + 20);
-//            gc.strokeLine(getX(), getY() + 20, getX() - 6, getY() + 14);
-//            gc.strokeLine(getX(), getY() + 20, getX() + 6, getY() + 14);
         } else {
             gc.strokeLine(getX(), getY(), getX(), getY() - 10);
             gc.strokeLine(getX(), getY() - 10, getX() + 10, getY() - 10);
