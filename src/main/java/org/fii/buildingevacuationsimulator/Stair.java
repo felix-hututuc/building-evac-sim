@@ -19,13 +19,6 @@ public class Stair extends Door {
         this.floor2 = floor2;
     }
 
-    public Stair(String uuid, Floor floor1, Floor floor2, Room room1, Room room2, double capacity, double x, double y) {
-        super(uuid, room1, room2, capacity, x, y);
-        this.uuid = uuid;
-        this.floor1 = floor1;
-        this.floor2 = floor2;
-    }
-
     public Floor getFloor1() {
         return floor1;
     }
@@ -61,6 +54,7 @@ public class Stair extends Door {
     }
 
     //export as a json object using the json library
+    @Override
     public JsonObject toJson() {
         return Json.createObjectBuilder()
                 .add("uuid", uuid)

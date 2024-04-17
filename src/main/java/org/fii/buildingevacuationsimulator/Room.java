@@ -1,10 +1,10 @@
 package org.fii.buildingevacuationsimulator;
 
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+
 import java.util.*;
 
 public class Room {
@@ -14,7 +14,7 @@ public class Room {
     private double width;
     private double height;
     private double space = 0;
-    private int floorNumber;
+    private final int floorNumber;
     private final Set<Room> neighbours = new HashSet<>();
     private final Set<Door> doors = new HashSet<>();
 
