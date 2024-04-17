@@ -19,13 +19,6 @@ public class Stair extends Door {
         this.floor2 = floor2;
     }
 
-    public Stair(String uuid, Floor floor1, Floor floor2, Room room1, Room room2, double capacity, double x, double y) {
-        super(uuid, room1, room2, capacity, x, y);
-        this.uuid = uuid;
-        this.floor1 = floor1;
-        this.floor2 = floor2;
-    }
-
     public Floor getFloor1() {
         return floor1;
     }
@@ -34,16 +27,13 @@ public class Stair extends Door {
         return floor2;
     }
 
-    @Override
-    public void draw(GraphicsContext gc) {
+    public void draw(GraphicsContext gc, int currentFloor) {
         gc.setFill(Color.BLACK);
-        if (floor1.getFloorNumber() > floor2.getFloorNumber()) {
+        if (currentFloor == floor2.getFloorNumber()) {
             gc.strokeLine(getX(), getY(), getX() + 10, getY());
             gc.strokeLine(getX() + 10, getY(), getX() + 10, getY() + 10);
             gc.strokeLine(getX() + 10, getY() + 10, getX() + 20, getY() + 10);
             gc.strokeLine(getX() + 20, getY() + 10, getX() + 20, getY() + 20);
-//            gc.strokeLine(getX(), getY() + 20, getX() - 6, getY() + 14);
-//            gc.strokeLine(getX(), getY() + 20, getX() + 6, getY() + 14);
         } else {
             gc.strokeLine(getX(), getY(), getX(), getY() - 10);
             gc.strokeLine(getX(), getY() - 10, getX() + 10, getY() - 10);
@@ -64,6 +54,7 @@ public class Stair extends Door {
     }
 
     //export as a json object using the json library
+    @Override
     public JsonObject toJson() {
         return Json.createObjectBuilder()
                 .add("uuid", uuid)

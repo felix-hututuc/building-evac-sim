@@ -17,7 +17,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.PopupWindow;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.flow.EdmondsKarpMFImpl;
-import org.jgrapht.graph.DirectedWeightedMultigraph;
+import org.jgrapht.graph.SimpleWeightedGraph;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -35,7 +35,7 @@ public class BuildingController {
     private EdmondsKarpMFImpl<Room, Door> maxFlowAlgorithm;
 
     public BuildingController() {
-        flowNetwork = new DirectedWeightedMultigraph<>(Door.class);
+        flowNetwork = new SimpleWeightedGraph<>(Door.class);
 
         sink = new Room(0,0,0,0, -1);
         flowNetwork.addVertex(sink);
@@ -324,16 +324,11 @@ public class BuildingController {
                             double[] nearestEdge = room.getNearestEdge(x, y);
 
                             Door door1 = new Door(room, neighbour, Double.parseDouble(result.get()), nearestEdge[0], nearestEdge[1]);
-                            Door door2 = new Door(neighbour, room, Double.parseDouble(result.get()), nearestEdge[0], nearestEdge[1]);
 
                             room.addDoor(door1);
                             neighbour.addDoor(door1);
-                            room.addDoor(door2);
-                            neighbour.addDoor(door2);
                             flowNetwork.addEdge(room, neighbour, door1);
                             flowNetwork.setEdgeWeight(door1, Double.parseDouble(result.get()));
-                            flowNetwork.addEdge(neighbour, room, door2);
-                            flowNetwork.setEdgeWeight(door2, Double.parseDouble(result.get()));
 
                             draw();
                             return;
@@ -405,22 +400,15 @@ public class BuildingController {
                                 return;
                             }
                             Stair stair1 = new Stair(currentFloor, floors.get(currentFloorIndex - 1), room, roomBellow, Double.parseDouble(result.get()), x, y);
-                            Stair stair2 = new Stair(floors.get(currentFloorIndex - 1), currentFloor, roomBellow, room, Double.parseDouble(result.get()), x, y);
                             currentFloor.addStair(stair1);
                             floors.get(currentFloorIndex - 1).addStair(stair1);
 
-                            currentFloor.addStair(stair2);
-                            floors.get(currentFloorIndex - 1).addStair(stair2);
                             room.addDoor(stair1);
-                            room.addDoor(stair2);
 
                             roomBellow.addDoor(stair1);
-                            roomBellow.addDoor(stair2);
 
                             flowNetwork.addEdge(room, roomBellow, stair1);
                             flowNetwork.setEdgeWeight(stair1, Double.parseDouble(result.get()));
-                            flowNetwork.addEdge(roomBellow, room, stair2);
-                            flowNetwork.setEdgeWeight(stair2, Double.parseDouble(result.get()));
                             draw();
                             return;
                         }
@@ -463,6 +451,7 @@ public class BuildingController {
                 System.out.println("Source not selected");
                 return;
             }
+            draw();
             maxFlowAlgorithm = new EdmondsKarpMFImpl<>(flowNetwork);
             var maxFlow = maxFlowAlgorithm.calculateMaximumFlow(source, sink);
             var flowMap = maxFlowAlgorithm.getFlowMap();
@@ -557,7 +546,8 @@ public class BuildingController {
 
                         }
                     } else if (edge.getClass() == Stair.class) {
-                        if (edge.getSource().getFloorNumber() > edge.getTarget().getFloorNumber()) {
+                        Room sourceRoom = edge.getTarget() == nextRoom ? edge.getSource() : edge.getTarget();
+                        if (sourceRoom.getFloorNumber() > nextRoom.getFloorNumber()) {
                             currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor, xDoor, yDoor + 20);
                             currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor + 20, xDoor - 6, yDoor + 14);
                             currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor + 20, xDoor + 6, yDoor + 14);
@@ -578,7 +568,7 @@ public class BuildingController {
                         }
                     }
 
-                    currentFloor.getCanvas().getGraphicsContext2D().setStroke(Color.WHITE);
+                    currentFloor.getCanvas().getGraphicsContext2D().setStroke(Color.BLACK);
                 } catch (IllegalArgumentException e) {
                     System.out.println("Edge not in flow network");
                     System.out.println(edge.getWeight());
@@ -660,9 +650,21 @@ public class BuildingController {
 
     public void printEdges() {
         for (Room room : flowNetwork.vertexSet()) {
-            System.out.println("Room " + currentFloor.getRooms().indexOf(room) + " has edges:");
+            if (room == sink) {
+                continue;
+            }
+            Floor roomFloor = floors.get(room.getFloorNumber());
+            System.out.println("Floor " + room.getFloorNumber() + " - Room " + roomFloor.getRooms().indexOf(room) + " has edges:");
             for (Door door : flowNetwork.edgesOf(room)) {
-                System.out.println("\tDoor " + currentFloor.getRooms().indexOf(flowNetwork.getEdgeSource(door)) + " -> " + currentFloor.getRooms().indexOf(flowNetwork.getEdgeTarget(door)) + " with capacity " + door.getWeight());
+                Room edgeSource = flowNetwork.getEdgeSource(door);
+                Room edgeTarget = flowNetwork.getEdgeTarget(door);
+                Floor sourceFloor = floors.get(edgeSource.getFloorNumber());
+                if (edgeTarget == sink) {
+                    System.out.println("Door from Floor " + edgeSource.getFloorNumber() + " - Room " + sourceFloor.getRooms().indexOf(edgeSource) + " to sink with capacity " + door.getWeight());
+                    continue;
+                }
+                Floor targetFloor = floors.get(edgeTarget.getFloorNumber());
+                System.out.println("Door from Floor " + edgeSource.getFloorNumber() + " - Room " + sourceFloor.getRooms().indexOf(edgeSource) + " to Floor " + edgeTarget.getFloorNumber() + " - Room " + targetFloor.getRooms().indexOf(edgeTarget) + " with capacity " + door.getWeight());
             }
         }
     }
@@ -711,7 +713,11 @@ public class BuildingController {
             File file = fileChooser.showSaveDialog(new PopupWindow() {});
             if (file != null) {
                 try {
-                    file.createNewFile();
+                    boolean fileCreated = file.createNewFile();
+                    if (!fileCreated) {
+                        System.out.println("File already exists");
+                        return;
+                    }
                     Map<String, Boolean> config = new HashMap<>();
 
                     config.put(JsonGenerator.PRETTY_PRINTING, true);
@@ -730,7 +736,7 @@ public class BuildingController {
     public static BuildingController fromJson(JsonObject jsonObject) {
         Room sink = Room.fromJson(jsonObject.getJsonObject("sink"));
 
-        Graph<Room, Door> flowNetwork = new DirectedWeightedMultigraph<>(Door.class);
+        Graph<Room, Door> flowNetwork = new SimpleWeightedGraph<>(Door.class);
         flowNetwork.addVertex(sink);
 
         int floorsNr = jsonObject.getInt("floorsNr");
@@ -769,7 +775,10 @@ public class BuildingController {
             Door door = Door.fromJson((JsonObject) doorJson, room1, room2);
             room1.addDoor(door);
             room2.addDoor(door);
-            buildingController.flowNetwork.addEdge(room1, room2, door);
+            boolean added = buildingController.flowNetwork.addEdge(room1, room2, door);
+            if (!added) {
+                System.out.println("Edge not added");
+            }
             buildingController.flowNetwork.setEdgeWeight(door, door.getWeight());
         });
         jsonObject.getJsonArray("stairs").forEach(stairJson -> {
@@ -788,7 +797,10 @@ public class BuildingController {
             floor2.addStair(stair);
             room1.addDoor(stair);
             room2.addDoor(stair);
-            buildingController.flowNetwork.addEdge(room1, room2, stair);
+            boolean added = buildingController.flowNetwork.addEdge(room1, room2, stair);
+            if (!added) {
+                System.out.println("Edge not added");
+            }
             buildingController.flowNetwork.setEdgeWeight(stair, stair.getWeight());
         });
 
@@ -858,7 +870,7 @@ public class BuildingController {
             floors.clear();
             currentFloor = new Floor(0);
             floors.add(currentFloor);
-            flowNetwork = new DirectedWeightedMultigraph<>(Door.class);
+            flowNetwork = new SimpleWeightedGraph<>(Door.class);
             sink = new Room(0, 0, 0, 0, 0);
             flowNetwork.addVertex(sink);
 

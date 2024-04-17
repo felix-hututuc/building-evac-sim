@@ -5,6 +5,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
+import java.io.Serial;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -12,7 +13,6 @@ import jakarta.json.Json;
 import jakarta.json.JsonObject;
 
 public class Door extends DefaultWeightedEdge {
-
     private final String uuid;
     private final Room room1;
     private final Room room2;

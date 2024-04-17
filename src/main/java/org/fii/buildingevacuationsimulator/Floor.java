@@ -1,37 +1,23 @@
 package org.fii.buildingevacuationsimulator;
 
-import jakarta.json.JsonString;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
 
-import jakarta.json.Json;
-import jakarta.json.JsonArrayBuilder;
-import jakarta.json.JsonObject;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class Floor {
-    private final String uuid;
     private int floorNumber = 0;
     private final List<Room> rooms = new ArrayList<>();
     private final List<Stair> stairs = new ArrayList<>();
     private final Canvas canvas = new Canvas(1200, 800);
 
     public Floor (int floorNumber) {
-        this.uuid = java.util.UUID.randomUUID().toString();
         this.floorNumber = floorNumber;
-        this.canvas.getGraphicsContext2D().setFill(Color.BLACK);
-        this.canvas.getGraphicsContext2D().setStroke(Color.WHITE);
-    }
-
-    public Floor (String uuid, int floorNumber) {
-        this.uuid = uuid;
-        this.floorNumber = floorNumber;
-        this.canvas.getGraphicsContext2D().setFill(Color.BLACK);
-        this.canvas.getGraphicsContext2D().setStroke(Color.WHITE);
-
+        this.canvas.getGraphicsContext2D().setFill(Color.WHITE);
+        this.canvas.getGraphicsContext2D().setStroke(Color.BLACK);
     }
 
     public int getFloorNumber() {
