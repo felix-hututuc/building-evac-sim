@@ -1,5 +1,9 @@
 package org.fii.buildingevacuationsimulator;
 
+import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
+import com.mxgraph.layout.mxCircleLayout;
+import com.mxgraph.layout.mxIGraphLayout;
+import com.mxgraph.util.mxCellRenderer;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonWriterFactory;
@@ -18,7 +22,13 @@ import javafx.stage.PopupWindow;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.flow.EdmondsKarpMFImpl;
 import org.jgrapht.graph.SimpleWeightedGraph;
+import org.jgrapht.ext.JGraphXAdapter;
+import org.jgrapht.nio.GraphExporter;
+import org.jgrapht.nio.dot.DOTExporter;
 
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -292,6 +302,7 @@ public class BuildingController {
                 }
             }
             draw();
+
         };
     }
 
@@ -670,6 +681,16 @@ public class BuildingController {
     }
 
     public EventHandler<ActionEvent> showGraphHandle() {
+        File imgFile = new File("src/main/resources/graph.png");
+        try {
+            imgFile.createNewFile();
+            // export the graph as a png image
+            GraphExporter<Room, Door> graphExporter = new DOTExporter<>(room -> room.getFloorNumber() + " - " + floors.get(room.getFloorNumber()).getRooms().indexOf(room));
+            graphExporter.exportAsPNG(imgFile);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return event -> printEdges();
     }
 

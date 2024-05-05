@@ -12,6 +12,10 @@ module org.fii.buildingevacuationsimulator {
     requires org.jgrapht.core;
     requires jakarta.json;
     requires org.eclipse.parsson;
+    requires org.jgrapht.ext;
+    requires org.jgrapht.io;
+    requires jgraph;
+    requires java.desktop;
 
     opens org.fii.buildingevacuationsimulator to javafx.fxml;
     exports org.fii.buildingevacuationsimulator;
