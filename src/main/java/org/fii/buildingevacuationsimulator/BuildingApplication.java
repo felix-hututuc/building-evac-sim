@@ -37,7 +37,7 @@ public class BuildingApplication extends Application {
         stairButton.setOnAction(buildingController.stairButtonHandle());
         toolBar.getItems().add(stairButton);
 
-        Button sourceButton = new Button("Select Source");
+        Button sourceButton = new Button("Select Sources");
         sourceButton.setOnAction(buildingController.sourceButtonHandle());
         toolBar.getItems().add(sourceButton);
 
