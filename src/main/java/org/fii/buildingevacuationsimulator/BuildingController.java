@@ -456,7 +456,7 @@ public class BuildingController {
             var maxFlow = maxFlowAlgorithm.calculateMaximumFlow(source, sink);
             var flowMap = maxFlowAlgorithm.getFlowMap();
 
-            System.out.println(maxFlow);
+            System.out.println("Max Flow = " + maxFlow);
 
             for (var edge : currentFloor.getDoors()) {
                 try {
@@ -570,8 +570,8 @@ public class BuildingController {
 
                     currentFloor.getCanvas().getGraphicsContext2D().setStroke(Color.BLACK);
                 } catch (IllegalArgumentException e) {
-                    System.out.println("Edge not in flow network");
-                    System.out.println(edge.getWeight());
+//                    System.out.println("Edge not in flow network");
+//                    System.out.println(edge.getWeight());
                 }
             }
         };
