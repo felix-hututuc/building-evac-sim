@@ -37,9 +37,13 @@ public class BuildingApplication extends Application {
         stairButton.setOnAction(buildingController.stairButtonHandle());
         toolBar.getItems().add(stairButton);
 
-        Button sourceButton = new Button("Select Source");
+        Button sourceButton = new Button("Select Sources");
         sourceButton.setOnAction(buildingController.sourceButtonHandle());
         toolBar.getItems().add(sourceButton);
+
+        Button clearSourceButton = new Button("Clear Sources");
+        clearSourceButton.setOnAction(buildingController.clearSourceButtonHandle());
+        toolBar.getItems().add(clearSourceButton);
 
         Button maxFlowButton = new Button("Max Flow");
         maxFlowButton.setOnAction(buildingController.maxFlowHandle());

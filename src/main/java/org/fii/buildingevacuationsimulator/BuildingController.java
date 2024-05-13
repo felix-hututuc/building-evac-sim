@@ -47,7 +47,9 @@ public class BuildingController {
     public BuildingController() {
         flowNetwork = new SimpleWeightedGraph<>(Door.class);
 
+        source = new Room(1,1,0,0, -1);
         sink = new Room(0,0,0,0, -1);
+        flowNetwork.addVertex(source);
         flowNetwork.addVertex(sink);
 
         currentFloor = new Floor(0);
@@ -67,6 +69,8 @@ public class BuildingController {
         this.floors.addAll(floors);
         this.currentFloor = currentFloor;
         this.flowNetwork = flowNetwork;
+        this.source = new Room(1,1,0,0, -1);
+        flowNetwork.addVertex(source);
         this.sink = sink;
 
         currentFloor.getCanvas().setOnMousePressed(canvasClickResize());
@@ -432,14 +436,26 @@ public class BuildingController {
 
     // select source node and return it by clicking on it
     public EventHandler<MouseEvent> sourceClickCanvasHandle() {
+        // add edge between source and clicked room
         return event -> {
+            // check if event was left or right click
+            if (event.isSecondaryButtonDown()) {
+                return;
+            }
             var x = event.getX();
             var y = event.getY();
             for (var room : currentFloor.getRooms()) {
                 if (room.isInside(x, y)) {
-                    source = room;
-                    System.out.println("Source room: " + currentFloor.getRooms().indexOf(room));
-                    break;
+                    if (source == null) {
+                        System.out.println("Virtual source not initialized");
+                        return;
+                    }
+                    // add edge between source and room with infinite capacity
+                    flowNetwork.addEdge(source, room, new Door(source, room, 1, x, y));
+                    flowNetwork.setEdgeWeight(source, room, 1);
+                    System.out.println("Room selected as source");
+
+                    return;
                 }
             }
         };
@@ -448,7 +464,7 @@ public class BuildingController {
     public EventHandler<ActionEvent> sourceButtonHandle() {
         return event -> {
             currentFloor.getCanvas().setOnMousePressed(sourceClickCanvasHandle());
-            currentFloor.getCanvas().setOnMouseReleased(event1 -> {
+            currentFloor.getCanvas().setOnContextMenuRequested(event1 -> {
                 currentFloor.getCanvas().setOnMousePressed(canvasClickResize());
                 currentFloor.getCanvas().setOnMouseReleased(canvasClickRelease());
                 currentFloor.getCanvas().setOnMouseDragged(canvasDragResize());
@@ -845,6 +861,7 @@ public class BuildingController {
                     floors.clear();
                     floors.addAll(buildingController.floors);
                     flowNetwork = buildingController.flowNetwork;
+                    source = buildingController.source;
                     sink = buildingController.sink;
                     buildingController.draw();
                     root.setCenter(currentFloor.getCanvas());
@@ -905,6 +922,17 @@ public class BuildingController {
             currentFloor.getCanvas().setOnMousePressed(canvasClickResize());
             currentFloor.getCanvas().setOnMouseReleased(canvasClickRelease());
             currentFloor.getCanvas().setOnMouseDragged(canvasDragResize());
+        };
+    }
+
+    public EventHandler<ActionEvent> clearSourceButtonHandle() {
+        return event -> {
+            flowNetwork.vertexSet().stream().filter(room -> room != sink).forEach(room -> {
+                if (flowNetwork.containsEdge(source, room)) {
+                    flowNetwork.removeEdge(source, room);
+                }
+            });
+            System.out.println("Sources cleared");
         };
     }
 }
