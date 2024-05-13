@@ -440,9 +440,9 @@ public class BuildingController {
                         return;
                     }
                     // add edge between source and room with infinite capacity
-                    flowNetwork.addEdge(source, room, new Door(source, room, Double.POSITIVE_INFINITY, x, y));
-                    flowNetwork.setEdgeWeight(source, room, Double.POSITIVE_INFINITY);
-                    System.out.println("Source added to room");
+                    flowNetwork.addEdge(source, room, new Door(source, room, 1, x, y));
+                    flowNetwork.setEdgeWeight(source, room, 1);
+                    System.out.println("Room selected as source");
 
                     return;
                 }
@@ -901,6 +901,17 @@ public class BuildingController {
             currentFloor.getCanvas().setOnMousePressed(canvasClickResize());
             currentFloor.getCanvas().setOnMouseReleased(canvasClickRelease());
             currentFloor.getCanvas().setOnMouseDragged(canvasDragResize());
+        };
+    }
+
+    public EventHandler<ActionEvent> clearSourceButtonHandle() {
+        return event -> {
+            flowNetwork.vertexSet().stream().filter(room -> room != sink).forEach(room -> {
+                if (flowNetwork.containsEdge(source, room)) {
+                    flowNetwork.removeEdge(source, room);
+                }
+            });
+            System.out.println("Sources cleared");
         };
     }
 }
