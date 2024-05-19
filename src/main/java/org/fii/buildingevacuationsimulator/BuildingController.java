@@ -1,9 +1,5 @@
 package org.fii.buildingevacuationsimulator;
 
-import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
-import com.mxgraph.layout.mxCircleLayout;
-import com.mxgraph.layout.mxIGraphLayout;
-import com.mxgraph.util.mxCellRenderer;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonWriterFactory;
@@ -17,18 +13,18 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.stage.FileChooser;
 import javafx.stage.PopupWindow;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.flow.EdmondsKarpMFImpl;
 import org.jgrapht.graph.SimpleWeightedGraph;
-import org.jgrapht.ext.JGraphXAdapter;
+import org.jgrapht.nio.Attribute;
+import org.jgrapht.nio.AttributeType;
+import org.jgrapht.nio.DefaultAttribute;
 import org.jgrapht.nio.GraphExporter;
 import org.jgrapht.nio.dot.DOTExporter;
 
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -351,19 +347,19 @@ public class BuildingController {
                     }
                     // add door to sink
                     System.out.println("Adding door to sink");
-                    TextInputDialog dialog = new TextInputDialog();
-                    dialog.setTitle("Input");
-                    dialog.setHeaderText("Input door capacity");
-                    Optional<String> result = dialog.showAndWait();
-                    if (result.isEmpty() || result.get().isEmpty()) {
-                        return;
-                    }
+//                    TextInputDialog dialog = new TextInputDialog();
+//                    dialog.setTitle("Input");
+//                    dialog.setHeaderText("Input door capacity");
+//                    Optional<String> result = dialog.showAndWait();
+//                    if (result.isEmpty() || result.get().isEmpty()) {
+//                        return;
+//                    }
                     double[] nearestEdge = room.getNearestEdge(x, y);
-                    Door door = new Door(room, sink, Double.parseDouble(result.get()), nearestEdge[0], nearestEdge[1]);
+                    Door door = new Door(room, sink, 1, nearestEdge[0], nearestEdge[1]);
                     room.addDoor(door);
                     sink.addDoor(door);
                     flowNetwork.addEdge(room, sink, door);
-                    flowNetwork.setEdgeWeight(door, Double.parseDouble(result.get()));
+                    flowNetwork.setEdgeWeight(door, 1);
 
                     draw();
                     return;
@@ -450,7 +446,7 @@ public class BuildingController {
                         System.out.println("Virtual source not initialized");
                         return;
                     }
-                    // add edge between source and room with infinite capacity
+                    // add edge between source and room with capacity 1
                     flowNetwork.addEdge(source, room, new Door(source, room, 1, x, y));
                     flowNetwork.setEdgeWeight(source, room, 1);
                     System.out.println("Room selected as source");
@@ -478,12 +474,18 @@ public class BuildingController {
                 System.out.println("Source not selected");
                 return;
             }
+            // reset all doors color to black
+            for (Door door : flowNetwork.edgeSet()) {
+                door.setColor("black");
+            }
+
             draw();
             maxFlowAlgorithm = new EdmondsKarpMFImpl<>(flowNetwork);
             var maxFlow = maxFlowAlgorithm.calculateMaximumFlow(source, sink);
             var flowMap = maxFlowAlgorithm.getFlowMap();
 
             System.out.println("Max Flow = " + maxFlow);
+            colorEdges();
 
             for (var edge : currentFloor.getDoors()) {
                 try {
@@ -610,7 +612,7 @@ public class BuildingController {
             room.draw(currentFloor.getCanvas().getGraphicsContext2D());
             // draw room index
             currentFloor.getCanvas().getGraphicsContext2D().setFill(Color.RED);
-            currentFloor.getCanvas().getGraphicsContext2D().fillText(String.valueOf(currentFloor.getRooms().indexOf(room)), room.getX() + room.getWidth() / 2, room.getY() + room.getHeight() / 2);
+            currentFloor.getCanvas().getGraphicsContext2D().fillText(room.getUuid().split("-")[0], room.getX() + room.getWidth() / 2, room.getY() + room.getHeight() / 2);
             // display current floor number
             currentFloor.getCanvas().getGraphicsContext2D().fillText("Floor " + currentFloor.getFloorNumber(), currentFloor.getCanvas().getWidth() * ((double) 9 / 10), currentFloor.getCanvas().getHeight() * ((double) 1 / 10));
         }
@@ -696,18 +698,60 @@ public class BuildingController {
         }
     }
 
-    public EventHandler<ActionEvent> showGraphHandle() {
-        File imgFile = new File("src/main/resources/graph.png");
-        try {
-            imgFile.createNewFile();
-            // export the graph as a png image
-            GraphExporter<Room, Door> graphExporter = new DOTExporter<>(room -> room.getFloorNumber() + " - " + floors.get(room.getFloorNumber()).getRooms().indexOf(room));
-            graphExporter.exportAsPNG(imgFile);
-
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void colorEdges() {
+        Random rand = new Random();
+        System.out.println("Coloring edges");
+        for (Door door : flowNetwork.edgesOf(source)) {
+            //to get rainbow, pastel colors
+            final float hue = rand.nextFloat();
+            final float saturation = 0.9f;//1.0 for brilliant, 0.0 for dull
+            final float luminance = 1.0f; //1.0 for brighter, 0.0 for black
+            var color = java.awt.Color.getHSBColor(hue, saturation, luminance);
+            String colorStr = "#" + Integer.toHexString(color.getRGB()).substring(2);
+            door.setColor(colorStr);
+            Room nextRoom = maxFlowAlgorithm.getFlowDirection(door);
+            if (maxFlowAlgorithm.getFlowMap().get(door) == 0) continue; // skip source from which no flow leaves
+            while (nextRoom != sink) {
+                for (Door nextDoor : flowNetwork.edgesOf(nextRoom)) {
+                    if (maxFlowAlgorithm.getFlowMap().get(nextDoor) != 0 && nextDoor.getColor().equals("black") && maxFlowAlgorithm.getFlowDirection(nextDoor) != nextRoom) {
+                        nextDoor.setColor(colorStr);
+                        nextRoom = maxFlowAlgorithm.getFlowDirection(nextDoor);
+                        break;
+                    }
+                }
+            }
         }
-        return event -> printEdges();
+    }
+
+    public EventHandler<ActionEvent> showGraphHandle() {
+        return event -> {
+            File imgFile = new File("src/main/resources/graph.dot");
+            try {
+                imgFile.createNewFile();
+                // export the graph as a png image
+                DOTExporter<Room, Door> graphExporter = new DOTExporter<>(room -> {
+                    if (room == sink) {
+                        return "t";
+                    } else if (room == source) {
+                        return "s";
+                    }
+                    return "v" + room.getFloorNumber() + "_" + floors.get(room.getFloorNumber()).getRooms().indexOf(room);
+                });
+                if (maxFlowAlgorithm == null) {
+                    graphExporter.setEdgeAttributeProvider(door -> Map.of("label", new DefaultAttribute<>(door.getWeightAsString(), AttributeType.STRING)));
+                } else {
+                    graphExporter.setEdgeAttributeProvider(door -> {
+                        Map<String, Attribute> edgeAttributes = new HashMap<>();
+                        edgeAttributes.put("label", new DefaultAttribute<>(door.getWeightAsString() + "/" + maxFlowAlgorithm.getFlowMap().get(door).intValue(), AttributeType.STRING));
+                        edgeAttributes.put("color", new DefaultAttribute<>(door.getColor(), AttributeType.STRING));
+                        return edgeAttributes;
+                    });
+                }
+                graphExporter.exportGraph(flowNetwork, imgFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        };
     }
 
     // export as a JSON object using the json library
@@ -797,7 +841,7 @@ public class BuildingController {
                     .filter(room -> room.getUuid().equals(((JsonObject) doorJson).getString("room1")))
                     .findFirst()
                     .orElseThrow();
-            Room room2 = null;
+            Room room2;
             if (((JsonObject) doorJson).getString("room2").equals(buildingController.sink.getUuid())) {
                 room2 = buildingController.sink;
             } else {

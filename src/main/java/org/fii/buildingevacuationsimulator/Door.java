@@ -21,6 +21,8 @@ public class Door extends DefaultWeightedEdge {
     private double x;
     private double y;
 
+    private String color = "black";
+
     public Door(Room room1, Room room2, double capacity, double x, double y) {
         this.uuid = UUID.randomUUID().toString();
         this.room1 = room1;
@@ -65,9 +67,25 @@ public class Door extends DefaultWeightedEdge {
         this.y = y;
     }
 
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
     @Override
     public double getWeight() {
         return capacity;
+    }
+
+    public String getWeightAsString() {
+        if (capacity == Double.MAX_VALUE) {
+            System.out.println("∞");
+            return "∞";
+        }
+        return String.valueOf((int)capacity);
     }
 
     public void draw(GraphicsContext gc) {
