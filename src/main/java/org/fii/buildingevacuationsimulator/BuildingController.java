@@ -612,7 +612,8 @@ public class BuildingController {
             room.draw(currentFloor.getCanvas().getGraphicsContext2D());
             // draw room index
             currentFloor.getCanvas().getGraphicsContext2D().setFill(Color.RED);
-            currentFloor.getCanvas().getGraphicsContext2D().fillText(room.getUuid().split("-")[0], room.getX() + room.getWidth() / 2, room.getY() + room.getHeight() / 2);
+            // room.getUuid().split("-")[0]
+            currentFloor.getCanvas().getGraphicsContext2D().fillText(String.valueOf(currentFloor.getRooms().indexOf(room)), room.getX() + room.getWidth() / 2, room.getY() + room.getHeight() / 2);
             // display current floor number
             currentFloor.getCanvas().getGraphicsContext2D().fillText("Floor " + currentFloor.getFloorNumber(), currentFloor.getCanvas().getWidth() * ((double) 9 / 10), currentFloor.getCanvas().getHeight() * ((double) 1 / 10));
         }
@@ -857,9 +858,9 @@ public class BuildingController {
             room1.addDoor(door);
             room2.addDoor(door);
             boolean added = buildingController.flowNetwork.addEdge(room1, room2, door);
-            if (!added) {
-                System.out.println("Edge not added");
-            }
+//            if (!added) {
+//                System.out.println("Edge not added");
+//            }
             buildingController.flowNetwork.setEdgeWeight(door, door.getWeight());
         });
         jsonObject.getJsonArray("stairs").forEach(stairJson -> {
@@ -879,9 +880,9 @@ public class BuildingController {
             room1.addDoor(stair);
             room2.addDoor(stair);
             boolean added = buildingController.flowNetwork.addEdge(room1, room2, stair);
-            if (!added) {
-                System.out.println("Edge not added");
-            }
+//            if (!added) {
+//                System.out.println("Edge not added");
+//            }
             buildingController.flowNetwork.setEdgeWeight(stair, stair.getWeight());
         });
 
