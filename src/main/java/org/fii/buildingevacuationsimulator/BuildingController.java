@@ -13,17 +13,8 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.stage.FileChooser;
 import javafx.stage.PopupWindow;
-import org.jgrapht.Graph;
-import org.jgrapht.alg.flow.EdmondsKarpMFImpl;
-import org.jgrapht.graph.SimpleWeightedGraph;
-import org.jgrapht.nio.Attribute;
-import org.jgrapht.nio.AttributeType;
-import org.jgrapht.nio.DefaultAttribute;
-import org.jgrapht.nio.GraphExporter;
-import org.jgrapht.nio.dot.DOTExporter;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -32,27 +23,17 @@ import java.io.Writer;
 import java.util.*;
 
 public class BuildingController {
-    Graph<Room, Door> flowNetwork;
-    private Room source;
-    private Room sink;
     private final List<Floor> floors = new ArrayList<>();
     private Floor currentFloor;
 
-    private EdmondsKarpMFImpl<Room, Door> maxFlowAlgorithm;
+    private EvacuationProblemInstance evacuationProblem = new EvacuationProblemInstance();
 
     public BuildingController() {
-        flowNetwork = new SimpleWeightedGraph<>(Door.class);
-
-        source = new Room(1,1,0,0, -1);
-        sink = new Room(0,0,0,0, -1);
-        flowNetwork.addVertex(source);
-        flowNetwork.addVertex(sink);
-
         currentFloor = new Floor(0);
 
         Room firstRoom = new Room(300, 100, 600, 600, 0);
         currentFloor.addRoom(firstRoom);
-        flowNetwork.addVertex(firstRoom);
+        evacuationProblem.addVertex(firstRoom);
 
         currentFloor.getCanvas().setOnMousePressed(canvasClickResize());
         currentFloor.getCanvas().setOnMouseReleased(canvasClickRelease());
@@ -61,13 +42,9 @@ public class BuildingController {
         floors.add(currentFloor);
     }
 
-    public BuildingController(List<Floor> floors, Floor currentFloor, Graph<Room, Door> flowNetwork, Room sink) {
+    public BuildingController(List<Floor> floors, Floor currentFloor) {
         this.floors.addAll(floors);
         this.currentFloor = currentFloor;
-        this.flowNetwork = flowNetwork;
-        this.source = new Room(1,1,0,0, -1);
-        flowNetwork.addVertex(source);
-        this.sink = sink;
 
         currentFloor.getCanvas().setOnMousePressed(canvasClickResize());
         currentFloor.getCanvas().setOnMouseReleased(canvasClickRelease());
@@ -120,8 +97,6 @@ public class BuildingController {
                     }
                 }
             }
-            System.out.println("Number of rooms= " + currentFloor.getRooms().size());
-            System.out.println("Number of doors= " + ((flowNetwork.edgeSet().size() + sink.getDoors().size()) / 2));
         };
     }
 
@@ -232,10 +207,10 @@ public class BuildingController {
                     currentFloor.removeRoom(room);
                     currentFloor.addRoom(newRoom1);
                     currentFloor.addRoom(newRoom2);
-                    flowNetwork.addVertex(newRoom1);
-                    flowNetwork.addVertex(newRoom2);
-                    flowNetwork.removeVertex(room);
-                    flowNetwork.removeAllEdges(room.getDoors());
+                    evacuationProblem.addVertex(newRoom1);
+                    evacuationProblem.addVertex(newRoom2);
+                    evacuationProblem.removeVertex(room);
+                    evacuationProblem.removeAllEdges(room.getDoors());
                     break;
                 }
             }
@@ -294,10 +269,10 @@ public class BuildingController {
                     currentFloor.removeRoom(room);
                     currentFloor.addRoom(newRoom1);
                     currentFloor.addRoom(newRoom2);
-                    flowNetwork.addVertex(newRoom1);
-                    flowNetwork.addVertex(newRoom2);
-                    flowNetwork.removeVertex(room);
-                    flowNetwork.removeAllEdges(room.getDoors());
+                    evacuationProblem.addVertex(newRoom1);
+                    evacuationProblem.addVertex(newRoom2);
+                    evacuationProblem.removeVertex(room);
+                    evacuationProblem.removeAllEdges(room.getDoors());
                     break;
                 }
             }
@@ -334,12 +309,11 @@ public class BuildingController {
                             }
                             double[] nearestEdge = room.getNearestEdge(x, y);
 
-                            Door door1 = new Door(room, neighbour, Double.parseDouble(result.get()), nearestEdge[0], nearestEdge[1]);
+                            Door door = new Door(room, neighbour, Integer.parseInt(result.get()), nearestEdge[0], nearestEdge[1]);
 
-                            room.addDoor(door1);
-                            neighbour.addDoor(door1);
-                            flowNetwork.addEdge(room, neighbour, door1);
-                            flowNetwork.setEdgeWeight(door1, Double.parseDouble(result.get()));
+                            room.addDoor(door);
+                            neighbour.addDoor(door);
+                            evacuationProblem.addEdge(door);
 
                             draw();
                             return;
@@ -347,19 +321,18 @@ public class BuildingController {
                     }
                     // add door to sink
                     System.out.println("Adding door to sink");
-//                    TextInputDialog dialog = new TextInputDialog();
-//                    dialog.setTitle("Input");
-//                    dialog.setHeaderText("Input door capacity");
-//                    Optional<String> result = dialog.showAndWait();
-//                    if (result.isEmpty() || result.get().isEmpty()) {
-//                        return;
-//                    }
+                    TextInputDialog dialog = new TextInputDialog();
+                    dialog.setTitle("Input");
+                    dialog.setHeaderText("Input door capacity");
+                    Optional<String> result = dialog.showAndWait();
+                    if (result.isEmpty() || result.get().isEmpty()) {
+                        return;
+                    }
                     double[] nearestEdge = room.getNearestEdge(x, y);
-                    Door door = new Door(room, sink, 1, nearestEdge[0], nearestEdge[1]);
+                    Door door = new Door(room, evacuationProblem.getTarget(), Integer.parseInt(result.get()), nearestEdge[0], nearestEdge[1]);
                     room.addDoor(door);
-                    sink.addDoor(door);
-                    flowNetwork.addEdge(room, sink, door);
-                    flowNetwork.setEdgeWeight(door, 1);
+                    evacuationProblem.getTarget().addDoor(door);
+                    evacuationProblem.addEdge(door);
 
                     draw();
                     return;
@@ -410,16 +383,15 @@ public class BuildingController {
                             if (result.isEmpty() || result.get().isEmpty()) {
                                 return;
                             }
-                            Stair stair1 = new Stair(currentFloor, floors.get(currentFloorIndex - 1), room, roomBellow, Double.parseDouble(result.get()), x, y);
-                            currentFloor.addStair(stair1);
-                            floors.get(currentFloorIndex - 1).addStair(stair1);
+                            Stair stair = new Stair(currentFloor, floors.get(currentFloorIndex - 1), room, roomBellow, Integer.parseInt(result.get()), x, y);
+                            currentFloor.addStair(stair);
+                            floors.get(currentFloorIndex - 1).addStair(stair);
 
-                            room.addDoor(stair1);
+                            room.addDoor(stair);
 
-                            roomBellow.addDoor(stair1);
+                            roomBellow.addDoor(stair);
 
-                            flowNetwork.addEdge(room, roomBellow, stair1);
-                            flowNetwork.setEdgeWeight(stair1, Double.parseDouble(result.get()));
+                            evacuationProblem.addEdge(stair);
                             draw();
                             return;
                         }
@@ -430,7 +402,6 @@ public class BuildingController {
     }
 
 
-    // select source node and return it by clicking on it
     public EventHandler<MouseEvent> sourceClickCanvasHandle() {
         // add edge between source and clicked room
         return event -> {
@@ -442,13 +413,14 @@ public class BuildingController {
             var y = event.getY();
             for (var room : currentFloor.getRooms()) {
                 if (room.isInside(x, y)) {
-                    if (source == null) {
-                        System.out.println("Virtual source not initialized");
+                    TextInputDialog dialog = new TextInputDialog();
+                    dialog.setTitle("Input");
+                    dialog.setHeaderText("Input source initial capacity");
+                    Optional<String> result = dialog.showAndWait();
+                    if (result.isEmpty() || result.get().isEmpty()) {
                         return;
                     }
-                    // add edge between source and room with capacity 1
-                    flowNetwork.addEdge(source, room, new Door(source, room, 1, x, y));
-                    flowNetwork.setEdgeWeight(source, room, 1);
+                    evacuationProblem.addEdgeToSource(room, Integer.parseInt(result.get()));
                     System.out.println("Room selected as source");
 
                     return;
@@ -469,141 +441,7 @@ public class BuildingController {
     }
 
     public EventHandler<ActionEvent> maxFlowHandle() {
-        return event -> {
-            if (source == null) {
-                System.out.println("Source not selected");
-                return;
-            }
-            // reset all doors color to black
-            for (Door door : flowNetwork.edgeSet()) {
-                door.setColor("black");
-            }
-
-            draw();
-            maxFlowAlgorithm = new EdmondsKarpMFImpl<>(flowNetwork);
-            var maxFlow = maxFlowAlgorithm.calculateMaximumFlow(source, sink);
-            var flowMap = maxFlowAlgorithm.getFlowMap();
-
-            System.out.println("Max Flow = " + maxFlow);
-            colorEdges();
-
-            for (var edge : currentFloor.getDoors()) {
-                try {
-                    var nextRoom = maxFlowAlgorithm.getFlowDirection(edge);
-
-                    if (nextRoom == null || flowMap.get(edge) == 0) {
-                        continue;
-                    }
-
-                    var xDoor = edge.getX();
-                    var yDoor = edge.getY();
-                    currentFloor.getCanvas().getGraphicsContext2D().setStroke(Color.RED);
-
-                    if (nextRoom.isOnLeftEdge(xDoor, yDoor)) {
-                        currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor, xDoor + 20, yDoor);
-                        currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor + 20, yDoor, xDoor + 14, yDoor - 6);
-                        currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor + 20, yDoor, xDoor + 14, yDoor + 6);
-
-                        currentFloor.getCanvas().getGraphicsContext2D().setFill(Color.BLUE);
-                        currentFloor.getCanvas().getGraphicsContext2D().fillText(String.valueOf(flowMap.get(edge)), xDoor + 25, yDoor);
-                        currentFloor.getCanvas().getGraphicsContext2D().setStroke(Color.RED);
-
-                    } else if (nextRoom.isOnRightEdge(xDoor, yDoor)) {
-                        currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor, xDoor - 20, yDoor);
-                        currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor - 20, yDoor, xDoor - 14, yDoor - 6);
-                        currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor - 20, yDoor, xDoor - 14, yDoor + 6);
-
-                        currentFloor.getCanvas().getGraphicsContext2D().setFill(Color.BLUE);
-                        currentFloor.getCanvas().getGraphicsContext2D().fillText(String.valueOf(flowMap.get(edge)), xDoor - 30, yDoor - 6);
-                        currentFloor.getCanvas().getGraphicsContext2D().setStroke(Color.RED);
-
-                    } else if (nextRoom.isOnTopEdge(xDoor, yDoor)) {
-                        currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor, xDoor, yDoor + 20);
-                        currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor + 20, xDoor - 6, yDoor + 14);
-                        currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor + 20, xDoor + 6, yDoor + 14);
-
-                        currentFloor.getCanvas().getGraphicsContext2D().setFill(Color.BLUE);
-                        currentFloor.getCanvas().getGraphicsContext2D().fillText(String.valueOf(flowMap.get(edge)), xDoor, yDoor + 30);
-                        currentFloor.getCanvas().getGraphicsContext2D().setStroke(Color.RED);
-
-                    } else if (nextRoom.isOnBottomEdge(xDoor, yDoor)) {
-                        currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor, xDoor, yDoor - 20);
-                        currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor - 20, xDoor - 6, yDoor - 14);
-                        currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor - 20, xDoor + 6, yDoor - 14);
-
-                        currentFloor.getCanvas().getGraphicsContext2D().setFill(Color.BLUE);
-                        currentFloor.getCanvas().getGraphicsContext2D().fillText(String.valueOf(flowMap.get(edge)), xDoor, yDoor - 25);
-                        currentFloor.getCanvas().getGraphicsContext2D().setStroke(Color.RED);
-
-                    } else if (nextRoom == sink) {
-                        Room sourceRoom = edge.getTarget() == nextRoom ? edge.getSource() : edge.getTarget();
-                        if (sourceRoom.isOnLeftEdge(xDoor, yDoor)) {
-                            currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor, xDoor - 20, yDoor);
-                            currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor - 20, yDoor, xDoor - 14, yDoor - 6);
-                            currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor - 20, yDoor, xDoor - 14, yDoor + 6);
-
-                            currentFloor.getCanvas().getGraphicsContext2D().setFill(Color.BLUE);
-                            currentFloor.getCanvas().getGraphicsContext2D().fillText(String.valueOf(flowMap.get(edge)), xDoor - 25, yDoor);
-                            currentFloor.getCanvas().getGraphicsContext2D().setStroke(Color.RED);
-
-                        } else if (sourceRoom.isOnRightEdge(xDoor, yDoor)) {
-                            currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor, xDoor + 20, yDoor);
-                            currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor + 20, yDoor, xDoor + 14, yDoor - 6);
-                            currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor + 20, yDoor, xDoor + 14, yDoor + 6);
-
-                            currentFloor.getCanvas().getGraphicsContext2D().setFill(Color.BLUE);
-                            currentFloor.getCanvas().getGraphicsContext2D().fillText(String.valueOf(flowMap.get(edge)), xDoor + 25, yDoor);
-                            currentFloor.getCanvas().getGraphicsContext2D().setStroke(Color.RED);
-
-                        } else if (sourceRoom.isOnTopEdge(xDoor, yDoor)) {
-                            currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor, xDoor, yDoor - 20);
-                            currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor - 20, xDoor - 6, yDoor - 14);
-                            currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor - 20, xDoor + 6, yDoor - 14);
-
-                            currentFloor.getCanvas().getGraphicsContext2D().setFill(Color.BLUE);
-                            currentFloor.getCanvas().getGraphicsContext2D().fillText(String.valueOf(flowMap.get(edge)), xDoor, yDoor - 25);
-                            currentFloor.getCanvas().getGraphicsContext2D().setStroke(Color.RED);
-
-                        } else if (sourceRoom.isOnBottomEdge(xDoor, yDoor)) {
-                            currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor, xDoor, yDoor + 20);
-                            currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor + 20, xDoor - 6, yDoor + 14);
-                            currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor + 20, xDoor + 6, yDoor + 14);
-
-                            currentFloor.getCanvas().getGraphicsContext2D().setFill(Color.BLUE);
-                            currentFloor.getCanvas().getGraphicsContext2D().fillText(String.valueOf(flowMap.get(edge)), xDoor, yDoor + 25);
-                            currentFloor.getCanvas().getGraphicsContext2D().setStroke(Color.RED);
-
-                        }
-                    } else if (edge.getClass() == Stair.class) {
-                        Room sourceRoom = edge.getTarget() == nextRoom ? edge.getSource() : edge.getTarget();
-                        if (sourceRoom.getFloorNumber() > nextRoom.getFloorNumber()) {
-                            currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor, xDoor, yDoor + 20);
-                            currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor + 20, xDoor - 6, yDoor + 14);
-                            currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor + 20, xDoor + 6, yDoor + 14);
-
-                            currentFloor.getCanvas().getGraphicsContext2D().setFill(Color.BLUE);
-                            currentFloor.getCanvas().getGraphicsContext2D().fillText(String.valueOf(flowMap.get(edge)), xDoor, yDoor + 25);
-                            currentFloor.getCanvas().getGraphicsContext2D().setStroke(Color.RED);
-
-                        } else {
-                            currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor, xDoor, yDoor - 20);
-                            currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor - 20, xDoor - 6, yDoor - 14);
-                            currentFloor.getCanvas().getGraphicsContext2D().strokeLine(xDoor, yDoor - 20, xDoor + 6, yDoor - 14);
-
-                            currentFloor.getCanvas().getGraphicsContext2D().setFill(Color.BLUE);
-                            currentFloor.getCanvas().getGraphicsContext2D().fillText(String.valueOf(flowMap.get(edge)), xDoor, yDoor - 25);
-                            currentFloor.getCanvas().getGraphicsContext2D().setStroke(Color.RED);
-
-                        }
-                    }
-
-                    currentFloor.getCanvas().getGraphicsContext2D().setStroke(Color.BLACK);
-                } catch (IllegalArgumentException e) {
-//                    System.out.println("Edge not in flow network");
-//                    System.out.println(edge.getWeight());
-                }
-            }
-        };
+        return _ -> evacuationProblem.executeSimulation();
     }
 
     public void draw() {
@@ -625,7 +463,7 @@ public class BuildingController {
 
             Room firstRoom = new Room(300, 100, 600, 600, currentFloor.getFloorNumber());
             currentFloor.addRoom(firstRoom);
-            flowNetwork.addVertex(firstRoom);
+            evacuationProblem.addVertex(firstRoom);
 
             floors.add(currentFloor);
             this.getCanvas().setOnMousePressed(canvasClickResize());
@@ -637,7 +475,7 @@ public class BuildingController {
     }
 
     public EventHandler<ActionEvent> previousFloorHandle(BorderPane root) {
-        return event -> {
+        return _ -> {
             if (floors.indexOf(currentFloor) >= 1) {
                 currentFloor = floors.get(floors.indexOf(currentFloor) - 1);
                 draw();
@@ -647,7 +485,7 @@ public class BuildingController {
     }
 
     public EventHandler<ActionEvent> nextFloorHandle(BorderPane root) {
-        return event -> {
+        return _ -> {
             if (floors.indexOf(currentFloor) < floors.size() - 1) {
                 currentFloor = floors.get(floors.indexOf(currentFloor) + 1);
                 draw();
@@ -678,77 +516,10 @@ public class BuildingController {
         };
     }
 
-    public void printEdges() {
-        for (Room room : flowNetwork.vertexSet()) {
-            if (room == sink) {
-                continue;
-            }
-            Floor roomFloor = floors.get(room.getFloorNumber());
-            System.out.println("Floor " + room.getFloorNumber() + " - Room " + roomFloor.getRooms().indexOf(room) + " has edges:");
-            for (Door door : flowNetwork.edgesOf(room)) {
-                Room edgeSource = flowNetwork.getEdgeSource(door);
-                Room edgeTarget = flowNetwork.getEdgeTarget(door);
-                Floor sourceFloor = floors.get(edgeSource.getFloorNumber());
-                if (edgeTarget == sink) {
-                    System.out.println("Door from Floor " + edgeSource.getFloorNumber() + " - Room " + sourceFloor.getRooms().indexOf(edgeSource) + " to sink with capacity " + door.getWeight());
-                    continue;
-                }
-                Floor targetFloor = floors.get(edgeTarget.getFloorNumber());
-                System.out.println("Door from Floor " + edgeSource.getFloorNumber() + " - Room " + sourceFloor.getRooms().indexOf(edgeSource) + " to Floor " + edgeTarget.getFloorNumber() + " - Room " + targetFloor.getRooms().indexOf(edgeTarget) + " with capacity " + door.getWeight());
-            }
-        }
-    }
-
-    private void colorEdges() {
-        Random rand = new Random();
-        System.out.println("Coloring edges");
-        for (Door door : flowNetwork.edgesOf(source)) {
-            //to get rainbow, pastel colors
-            final float hue = rand.nextFloat();
-            final float saturation = 0.9f;//1.0 for brilliant, 0.0 for dull
-            final float luminance = 1.0f; //1.0 for brighter, 0.0 for black
-            var color = java.awt.Color.getHSBColor(hue, saturation, luminance);
-            String colorStr = "#" + Integer.toHexString(color.getRGB()).substring(2);
-            door.setColor(colorStr);
-            Room nextRoom = maxFlowAlgorithm.getFlowDirection(door);
-            if (maxFlowAlgorithm.getFlowMap().get(door) == 0) continue; // skip source from which no flow leaves
-            while (nextRoom != sink) {
-                for (Door nextDoor : flowNetwork.edgesOf(nextRoom)) {
-                    if (maxFlowAlgorithm.getFlowMap().get(nextDoor) != 0 && nextDoor.getColor().equals("black") && maxFlowAlgorithm.getFlowDirection(nextDoor) != nextRoom) {
-                        nextDoor.setColor(colorStr);
-                        nextRoom = maxFlowAlgorithm.getFlowDirection(nextDoor);
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
     public EventHandler<ActionEvent> showGraphHandle() {
         return event -> {
-            File imgFile = new File("src/main/resources/graph.dot");
             try {
-                imgFile.createNewFile();
-                // export the graph as a png image
-                DOTExporter<Room, Door> graphExporter = new DOTExporter<>(room -> {
-                    if (room == sink) {
-                        return "t";
-                    } else if (room == source) {
-                        return "s";
-                    }
-                    return "v" + room.getFloorNumber() + "_" + floors.get(room.getFloorNumber()).getRooms().indexOf(room);
-                });
-                if (maxFlowAlgorithm == null) {
-                    graphExporter.setEdgeAttributeProvider(door -> Map.of("label", new DefaultAttribute<>(door.getWeightAsString(), AttributeType.STRING)));
-                } else {
-                    graphExporter.setEdgeAttributeProvider(door -> {
-                        Map<String, Attribute> edgeAttributes = new HashMap<>();
-                        edgeAttributes.put("label", new DefaultAttribute<>(door.getWeightAsString() + "/" + maxFlowAlgorithm.getFlowMap().get(door).intValue(), AttributeType.STRING));
-                        edgeAttributes.put("color", new DefaultAttribute<>(door.getColor(), AttributeType.STRING));
-                        return edgeAttributes;
-                    });
-                }
-                graphExporter.exportGraph(flowNetwork, imgFile);
+                evacuationProblem.showGraph();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -758,7 +529,7 @@ public class BuildingController {
     // export as a JSON object using the json library
     public JsonObject toJson() {
         return Json.createObjectBuilder()
-                .add("sink", sink.toJson())
+                .add("sink", evacuationProblem.getTarget().toJson())
                 .add("floorsNr", floors.size())
                 .add("currentFloor", floors.indexOf(currentFloor))
                 .add("rooms", Json.createArrayBuilder(
@@ -771,6 +542,7 @@ public class BuildingController {
                         floors.stream()
                                 .flatMap(floor -> floor.getRooms().stream())
                                 .flatMap(room -> room.getDoors().stream())
+                                .filter(door -> door.getClass() != Stair.class)
                                 .map(Door::toJson)
                                 .toList()
                 ))
@@ -818,9 +590,6 @@ public class BuildingController {
     public static BuildingController fromJson(JsonObject jsonObject) {
         Room sink = Room.fromJson(jsonObject.getJsonObject("sink"));
 
-        Graph<Room, Door> flowNetwork = new SimpleWeightedGraph<>(Door.class);
-        flowNetwork.addVertex(sink);
-
         int floorsNr = jsonObject.getInt("floorsNr");
         int currentFloorNr = jsonObject.getInt("currentFloor");
         List<Floor> floors = new ArrayList<>();
@@ -828,41 +597,46 @@ public class BuildingController {
             floors.add(new Floor(i));
         }
 
-        BuildingController buildingController = new BuildingController(floors, floors.get(currentFloorNr), flowNetwork, sink);
+        BuildingController buildingController = new BuildingController(floors, floors.get(currentFloorNr));
 
         List<Room> rooms = new ArrayList<>();
         jsonObject.getJsonArray("rooms").forEach(roomJson -> {
             Room room = Room.fromJson((JsonObject) roomJson);
             rooms.add(room);
             buildingController.floors.get(room.getFloorNumber()).addRoom(room);
-            buildingController.flowNetwork.addVertex(room);
+            buildingController.evacuationProblem.addVertex(room);
         });
+
         jsonObject.getJsonArray("doors").forEach(doorJson -> {
             Room room1 = rooms.stream()
                     .filter(room -> room.getUuid().equals(((JsonObject) doorJson).getString("room1")))
                     .findFirst()
                     .orElseThrow();
-            Room room2;
-            if (((JsonObject) doorJson).getString("room2").equals(buildingController.sink.getUuid())) {
-                room2 = buildingController.sink;
-            } else {
-                room2 = rooms.stream()
-                        .filter(room -> room.getUuid().equals(((JsonObject) doorJson).getString("room2")))
-                        .findFirst()
-                        .orElseThrow();
-                if (room1.getFloorNumber() != room2.getFloorNumber()) {
-                    return;
-                }
+
+            if (((JsonObject) doorJson).getString("room2").equals(sink.getUuid())) {
+                Room newSink = buildingController.evacuationProblem.getTarget();
+                Door door = Door.fromJson((JsonObject) doorJson, room1, newSink);
+                room1.addDoor(door);
+
+                buildingController.evacuationProblem.addEdge(door);
+
+                return;
             }
+
+            Room room2 = rooms.stream()
+                    .filter(room -> room.getUuid().equals(((JsonObject) doorJson).getString("room2")))
+                    .findFirst()
+                    .orElseThrow();
+            if (room1.getFloorNumber() != room2.getFloorNumber()) {
+                return;
+            }
+
             Door door = Door.fromJson((JsonObject) doorJson, room1, room2);
             room1.addDoor(door);
             room2.addDoor(door);
-            boolean added = buildingController.flowNetwork.addEdge(room1, room2, door);
-//            if (!added) {
-//                System.out.println("Edge not added");
-//            }
-            buildingController.flowNetwork.setEdgeWeight(door, door.getWeight());
+            buildingController.evacuationProblem.addEdge(door);
         });
+
         jsonObject.getJsonArray("stairs").forEach(stairJson -> {
             Floor floor1 = buildingController.floors.get(((JsonObject) stairJson).getInt("floor1"));
             Floor floor2 = buildingController.floors.get(((JsonObject) stairJson).getInt("floor2"));
@@ -879,18 +653,14 @@ public class BuildingController {
             floor2.addStair(stair);
             room1.addDoor(stair);
             room2.addDoor(stair);
-            boolean added = buildingController.flowNetwork.addEdge(room1, room2, stair);
-//            if (!added) {
-//                System.out.println("Edge not added");
-//            }
-            buildingController.flowNetwork.setEdgeWeight(stair, stair.getWeight());
+            buildingController.evacuationProblem.addEdge(stair);
         });
 
         return buildingController;
     }
 
     public EventHandler<ActionEvent> importHandle(BorderPane root) {
-        return event -> {
+        return _ -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Open File");
             fileChooser.setInitialDirectory(new File("./saves"));
@@ -905,9 +675,7 @@ public class BuildingController {
                     currentFloor = buildingController.currentFloor;
                     floors.clear();
                     floors.addAll(buildingController.floors);
-                    flowNetwork = buildingController.flowNetwork;
-                    source = buildingController.source;
-                    sink = buildingController.sink;
+                    evacuationProblem = buildingController.evacuationProblem;
                     buildingController.draw();
                     root.setCenter(currentFloor.getCanvas());
                 } catch (IOException e) {
@@ -918,7 +686,7 @@ public class BuildingController {
     }
 
     public EventHandler<ActionEvent> removeDoorHandle() {
-        return event -> {
+        return _ -> {
             currentFloor.getCanvas().setOnMousePressed(removeDoorClickCanvasHandle());
             currentFloor.getCanvas().setOnMouseReleased(event1 -> {
                 currentFloor.getCanvas().setOnMousePressed(canvasClickResize());
@@ -940,7 +708,7 @@ public class BuildingController {
                         ((Stair) Door).getFloor1().removeStair((Stair) Door);
                         ((Stair) Door).getFloor2().removeStair((Stair) Door);
                     }
-                    flowNetwork.removeEdge(Door);
+                    evacuationProblem.removeEdge(Door);
                     System.out.println("Door removed");
                 }
             }
@@ -949,17 +717,15 @@ public class BuildingController {
     }
 
     public EventHandler<ActionEvent> resetHandle(BorderPane root) {
-        return event -> {
+        return _ -> {
             floors.clear();
             currentFloor = new Floor(0);
             floors.add(currentFloor);
-            flowNetwork = new SimpleWeightedGraph<>(Door.class);
-            sink = new Room(0, 0, 0, 0, 0);
-            flowNetwork.addVertex(sink);
+            evacuationProblem = new EvacuationProblemInstance();
 
             Room firstRoom = new Room(300, 100, 600, 600, 0);
             currentFloor.addRoom(firstRoom);
-            flowNetwork.addVertex(firstRoom);
+            evacuationProblem.addVertex(firstRoom);
 
             draw();
             root.setCenter(currentFloor.getCanvas());
@@ -972,11 +738,7 @@ public class BuildingController {
 
     public EventHandler<ActionEvent> clearSourceButtonHandle() {
         return event -> {
-            flowNetwork.vertexSet().stream().filter(room -> room != sink).forEach(room -> {
-                if (flowNetwork.containsEdge(source, room)) {
-                    flowNetwork.removeEdge(source, room);
-                }
-            });
+            evacuationProblem.clearSourceEdges();
             System.out.println("Sources cleared");
         };
     }

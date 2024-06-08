@@ -12,7 +12,7 @@ public class Stair extends Door {
     private final String uuid;
     private final Floor floor1;
     private final Floor floor2;
-    public Stair(Floor floor1, Floor floor2, Room room1, Room room2, double capacity, double x, double y) {
+    public Stair(Floor floor1, Floor floor2, Room room1, Room room2, int capacity, double x, double y) {
         super(room1, room2, capacity, x, y);
         this.uuid = UUID.randomUUID().toString();
         this.floor1 = floor1;
@@ -73,7 +73,7 @@ public class Stair extends Door {
         return new Stair(floor1, floor2,
                 floor1.getRoomByUuid(jsonObject.getString("room1")),
                 floor2.getRoomByUuid(jsonObject.getString("room2")),
-                jsonObject.getJsonNumber("capacity").doubleValue(),
+                jsonObject.getJsonNumber("capacity").intValue(),
                 jsonObject.getJsonNumber("x").doubleValue(),
                 jsonObject.getJsonNumber("y").doubleValue());
     }

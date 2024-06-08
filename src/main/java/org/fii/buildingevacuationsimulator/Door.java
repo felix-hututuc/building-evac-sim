@@ -16,14 +16,14 @@ public class Door extends DefaultWeightedEdge {
     private final String uuid;
     private final Room room1;
     private final Room room2;
-    private final double capacity;
+    private int capacity;
 
     private double x;
     private double y;
 
     private String color = "black";
 
-    public Door(Room room1, Room room2, double capacity, double x, double y) {
+    public Door(Room room1, Room room2, int capacity, double x, double y) {
         this.uuid = UUID.randomUUID().toString();
         this.room1 = room1;
         this.room2 = room2;
@@ -32,7 +32,7 @@ public class Door extends DefaultWeightedEdge {
         this.y = y;
     }
 
-    public Door(String uuid, Room room1, Room room2, double capacity, double x, double y) {
+    public Door(String uuid, Room room1, Room room2, int capacity, double x, double y) {
         this.uuid = uuid;
         this.room1 = room1;
         this.room2 = room2;
@@ -80,6 +80,10 @@ public class Door extends DefaultWeightedEdge {
         return capacity;
     }
 
+    public void setWeight(int capacity) {
+        this.capacity = capacity;
+    }
+
     public String getWeightAsString() {
         if (capacity == Double.MAX_VALUE) {
             System.out.println("∞");
@@ -114,7 +118,7 @@ public class Door extends DefaultWeightedEdge {
         return new Door(jsonObject.getString("uuid"),
                 room1,
                 room2,
-                jsonObject.getJsonNumber("capacity").doubleValue(),
+                jsonObject.getJsonNumber("capacity").intValue(),
                 jsonObject.getJsonNumber("x").doubleValue(),
                 jsonObject.getJsonNumber("y").doubleValue());
     }
