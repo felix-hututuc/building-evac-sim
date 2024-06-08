@@ -3,7 +3,7 @@ package org.fii.buildingevacuationsimulator;
 import org.jgrapht.Graph;
 
 public class DisjointPathsProblemSolver implements EvacuationSolver {
-    public void solve(Graph<Room, Door> flowNetwork) {
+    public void solve(Graph<Room, Door> flowNetwork, Room source, Room sink) {
         // TODO document why this method is empty
     }
 

@@ -19,6 +19,13 @@ public class Stair extends Door {
         this.floor2 = floor2;
     }
 
+    public Stair(Stair stair) {
+        super(stair);
+        this.uuid = stair.uuid;
+        this.floor1 = stair.floor1;
+        this.floor2 = stair.floor2;
+    }
+
     public Floor getFloor1() {
         return floor1;
     }

@@ -41,6 +41,15 @@ public class Door extends DefaultWeightedEdge {
         this.y = y;
     }
 
+    public Door(Door door) {
+        this.uuid = door.uuid;
+        this.room1 = door.room1;
+        this.room2 = door.room2;
+        this.capacity = door.capacity;
+        this.x = door.x;
+        this.y = door.y;
+    }
+
     @Override
     public Room getSource() {
         return room1;

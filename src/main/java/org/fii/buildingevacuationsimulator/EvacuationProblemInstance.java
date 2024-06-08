@@ -16,8 +16,8 @@ import java.util.Random;
 
 public class EvacuationProblemInstance {
     private final Graph<Room, Door> flowNetwork = new SimpleWeightedGraph<>(Door.class);
-    private Room source = new Room(1,1,0,0, -1);
-    private Room target = new Room(0,0,0,0, -1);
+    private final Room source = new Room(1,1,0,0, -1);
+    private final Room target = new Room(0,0,0,0, -1);
     private EvacuationSolver evacuationProblemSolver;
 
     Random rand = new Random();
@@ -50,38 +50,17 @@ public class EvacuationProblemInstance {
     }
 
     public void addEdgeToSource(Room room, int capacity) {
-        flowNetwork.addEdge(source, room);
-        flowNetwork.setEdgeWeight(flowNetwork.getEdge(source, room), capacity);
-    }
-
-    public void addEdgeToTarget(Room room, int capacity) {
-        Door door = new Door(room, target, capacity, 0, 0);
-        flowNetwork.addEdge(room, target);
-        flowNetwork.setEdgeWeight(flowNetwork.getEdge(room, target), capacity);
+        Door door = new Door(source, room, capacity, 0, 0);
+        flowNetwork.addEdge(source, room, door);
+        flowNetwork.setEdgeWeight(door, capacity);
     }
 
     public void removeEdge(Door door) {
         flowNetwork.removeEdge(door);
     }
 
-    public void removeEdge(Room room1, Room room2) {
-        flowNetwork.removeEdge(room1, room2);
-    }
-
     public void removeAllEdges(Collection<Door> doors) {
         flowNetwork.removeAllEdges(doors);
-    }
-
-    public void setSource(Room source) {
-        this.source = source;
-    }
-
-    public void setTarget(Room target) {
-        this.target = target;
-    }
-
-    public Room getSource() {
-        return source;
     }
 
     public Room getTarget() {
@@ -94,19 +73,6 @@ public class EvacuationProblemInstance {
 
     public void clearSourceEdges() {
         flowNetwork.removeAllEdges(flowNetwork.edgesOf(source));
-    }
-
-    public double getTotalNumberOfPersonsInside() {
-        double total = 0;
-        for (Room room : flowNetwork.vertexSet()) {
-            if (room == source || room == target) {
-                continue;
-            }
-            if (flowNetwork.containsEdge(source, room)) {
-                total += flowNetwork.getEdge(source, room).getWeight();
-            }
-        }
-        return total;
     }
 
     private void colorEdges() {
@@ -156,6 +122,6 @@ public class EvacuationProblemInstance {
     }
 
     public void executeSimulation() {
-        evacuationProblemSolver.solve(flowNetwork);
+        evacuationProblemSolver.solve(flowNetwork, source, target);
     }
 }
