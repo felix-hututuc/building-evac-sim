@@ -72,7 +72,7 @@ public class EvacuationProblemInstance {
         flowNetwork.removeAllEdges(flowNetwork.edgesOf(source));
     }
 
-    public void showGraph() throws IOException {
+    public void exportGraphAsDot() throws IOException {
         File imgFile = new File("src/main/resources/graph.dot");
         imgFile.createNewFile();
         // export the graph as a png image
@@ -87,14 +87,32 @@ public class EvacuationProblemInstance {
 
         graphExporter.setEdgeAttributeProvider(door -> {
             Map<String, Attribute> edgeAttributes = new HashMap<>();
-            edgeAttributes.put("label", new DefaultAttribute<>(door.getWeightAsString() + "/" + evacuationProblemSolver.getFlow(door), AttributeType.STRING));
+            edgeAttributes.put("label", new DefaultAttribute<>(door.getWeightAsString(), AttributeType.STRING));
             edgeAttributes.put("color", new DefaultAttribute<>(door.getColor(), AttributeType.STRING));
             return edgeAttributes;
         });
         graphExporter.exportGraph(flowNetwork, imgFile);
     }
 
+    public void showGraph() throws IOException {
+        // call exportGraphAsDot() to generate the dot file and call graphviz command to render the graph as a png image
+        exportGraphAsDot();
+        ProcessBuilder pb = new ProcessBuilder("dot", "-Tpng", "src/main/resources/graph.dot", "-o", "src/main/resources/graph.png");
+        pb.start();
+    }
+
     public void executeSimulation() {
         evacuationProblemSolver.solve(flowNetwork, source, target);
+    }
+
+    public void resetSimulation() {
+        for (Door door : flowNetwork.edgeSet()) {
+            door.setColor("black");
+            door.setFlowDirection(FlowDirection.NONE);
+        }
+    }
+
+    public boolean isProblemSet() {
+        return evacuationProblemSolver != null;
     }
 }

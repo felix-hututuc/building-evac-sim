@@ -57,8 +57,19 @@ public class BuildingApplication extends Application {
         clearSourceButton.setOnAction(buildingController.clearSourceButtonHandle());
         toolBar.getItems().add(clearSourceButton);
 
+        MenuItem disjointPathsButton = new MenuItem("Disjoint Paths Problem");
+        disjointPathsButton.setOnAction(buildingController.selectDisjointPathsProblem());
+
+        MenuItem minimumTimeProblem = new MenuItem("Min Evac Time Problem");
+        minimumTimeProblem.setOnAction(buildingController.selectMinTimeProblem());
+
+        MenuButton selectProblemButton = new MenuButton("Select Problem");
+        selectProblemButton.getItems().add(disjointPathsButton);
+        selectProblemButton.getItems().add(minimumTimeProblem);
+        toolBar.getItems().add(selectProblemButton);
+
         Button maxFlowButton = new Button("Run Simulation");
-        maxFlowButton.setOnAction(buildingController.maxFlowHandle());
+        maxFlowButton.setOnAction(buildingController.runSimulationHandle());
         toolBar.getItems().add(maxFlowButton);
 
         Button showGraphButton = new Button("Show Graph Visualisation");
@@ -73,8 +84,15 @@ public class BuildingApplication extends Application {
         importButton.setOnAction(buildingController.importHandle(root));
         toolBar.getItems().add(importButton);
 
-        Button resetButton = new Button("Reset All");
-        resetButton.setOnAction(buildingController.resetHandle(root));
+        MenuItem resetSimButton = new MenuItem("Reset Sim");
+        resetSimButton.setOnAction(buildingController.resetSimulationHandle());
+
+        MenuItem resetAllButton = new MenuItem("Full Reset");
+        resetAllButton.setOnAction(buildingController.resetAll(root));
+
+        MenuButton resetButton = new MenuButton("Reset");
+        resetButton.getItems().add(resetSimButton);
+        resetButton.getItems().add(resetAllButton);
         toolBar.getItems().add(resetButton);
 
         root.setCenter(buildingController.getCanvas());

@@ -444,9 +444,12 @@ public class BuildingController {
         };
     }
 
-    public EventHandler<ActionEvent> maxFlowHandle() {
+    public EventHandler<ActionEvent> runSimulationHandle() {
         return _ -> {
-            evacuationProblem.setProblem(new DisjointPathsProblemSolver());
+            if (!evacuationProblem.isProblemSet()) {
+                System.out.println("Problem not set");
+                return;
+            }
             evacuationProblem.executeSimulation();
             draw();
         };
@@ -731,7 +734,14 @@ public class BuildingController {
         };
     }
 
-    public EventHandler<ActionEvent> resetHandle(BorderPane root) {
+    public EventHandler<ActionEvent> resetSimulationHandle() {
+        return event -> {
+            evacuationProblem.resetSimulation();
+            draw();
+        };
+    }
+
+    public EventHandler<ActionEvent> resetAll(BorderPane root) {
         return _ -> {
             floors.clear();
             currentFloor = new Floor(0);
@@ -755,6 +765,24 @@ public class BuildingController {
         return event -> {
             evacuationProblem.clearSourceEdges();
             System.out.println("Sources cleared");
+        };
+    }
+
+    public EventHandler<ActionEvent> selectDisjointPathsProblem() {
+        return event -> {
+            evacuationProblem.resetSimulation();
+            draw();
+            evacuationProblem.setProblem(new DisjointPathsProblemSolver());
+            System.out.println("Disjoint paths problem selected");
+        };
+    }
+
+    public EventHandler<ActionEvent> selectMinTimeProblem() {
+        return event -> {
+            evacuationProblem.resetSimulation();
+            draw();
+            evacuationProblem.setProblem(new MinimumEvacTimeProblemSolver());
+            System.out.println("Max flow problem selected");
         };
     }
 }
