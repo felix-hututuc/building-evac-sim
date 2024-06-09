@@ -5,6 +5,8 @@ import javafx.scene.paint.Color;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import javafx.scene.paint.Paint;
+
 import java.util.Objects;
 import java.util.UUID;
 
@@ -17,6 +19,7 @@ public class Stair extends Door {
         this.uuid = UUID.randomUUID().toString();
         this.floor1 = floor1;
         this.floor2 = floor2;
+        this.setColor("black");
     }
 
     public Stair(Stair stair) {
@@ -35,7 +38,7 @@ public class Stair extends Door {
     }
 
     public void draw(GraphicsContext gc, int currentFloor) {
-        gc.setFill(Color.BLACK);
+        gc.setFill(Paint.valueOf(this.getColor()));
         if (currentFloor == floor2.getFloorNumber()) {
             gc.strokeLine(getX(), getY(), getX() + 10, getY());
             gc.strokeLine(getX() + 10, getY(), getX() + 10, getY() + 10);
@@ -49,6 +52,29 @@ public class Stair extends Door {
         }
         gc.setFill(Color.RED);
         gc.fillText(String.valueOf(getWeight()), getX() + 15, getY() + 5);
+
+        Room nextRoom = null;
+        switch (getFlowDirection()){
+            case NONE -> {
+                gc.setFill(Color.BLACK);
+                return;
+            }
+            case SOURCE -> nextRoom = getSource();
+            case TARGET -> nextRoom = getTarget();
+        }
+        gc.setStroke(Paint.valueOf(getColor()));
+        gc.setLineWidth(2);
+        Room sourceRoom = getTarget() == nextRoom ? getSource() : getTarget();
+        if (sourceRoom.getFloorNumber() > nextRoom.getFloorNumber()) {
+            gc.strokeLine(getX(), getY(), getX(), getY() + 20);
+            gc.strokeLine(getX(), getY() + 20, getX() - 6, getY() + 14);
+            gc.strokeLine(getX(), getY() + 20, getX() + 6, getY() + 14);
+        } else {
+            gc.strokeLine(getX(), getY(), getX(), getY() - 20);
+            gc.strokeLine(getX(), getY() - 20, getX() - 6, getY() - 14);
+            gc.strokeLine(getX(), getY() - 20, getX() + 6, getY() - 14);
+        }
+        gc.setStroke(Color.BLACK);
     }
 
     @Override
@@ -87,7 +113,7 @@ public class Stair extends Door {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), uuid, floor1, floor2);
+        return Objects.hash(uuid);
     }
 
     @Override

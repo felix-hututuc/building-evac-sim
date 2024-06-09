@@ -34,6 +34,7 @@ public class BuildingController {
         Room firstRoom = new Room(300, 100, 600, 600, 0);
         currentFloor.addRoom(firstRoom);
         evacuationProblem.addVertex(firstRoom);
+        evacuationProblem.setProblem(new DisjointPathsProblemSolver());
 
         currentFloor.getCanvas().setOnMousePressed(canvasClickResize());
         currentFloor.getCanvas().setOnMouseReleased(canvasClickRelease());
@@ -420,9 +421,12 @@ public class BuildingController {
                     if (result.isEmpty() || result.get().isEmpty()) {
                         return;
                     }
-                    evacuationProblem.addEdgeToSource(room, Integer.parseInt(result.get()));
+                    int resultInt = Integer.parseInt(result.get());
+                    evacuationProblem.addEdgeToSource(room, resultInt);
+                    room.setNrOfPeopleInside(resultInt);
                     System.out.println("Room selected as source");
 
+                    draw();
                     return;
                 }
             }
@@ -441,17 +445,28 @@ public class BuildingController {
     }
 
     public EventHandler<ActionEvent> maxFlowHandle() {
-        return _ -> evacuationProblem.executeSimulation();
+        return _ -> {
+            evacuationProblem.setProblem(new DisjointPathsProblemSolver());
+            evacuationProblem.executeSimulation();
+            draw();
+        };
     }
 
     public void draw() {
         currentFloor.getCanvas().getGraphicsContext2D().clearRect(0, 0, currentFloor.getCanvas().getWidth(), currentFloor.getCanvas().getHeight());
         for (var room : currentFloor.getRooms()) {
+            currentFloor.getCanvas().getGraphicsContext2D().setFill(Color.BLACK);
             room.draw(currentFloor.getCanvas().getGraphicsContext2D());
             // draw room index
             currentFloor.getCanvas().getGraphicsContext2D().setFill(Color.RED);
             // room.getUuid().split("-")[0]
-            currentFloor.getCanvas().getGraphicsContext2D().fillText(String.valueOf(currentFloor.getRooms().indexOf(room)), room.getX() + room.getWidth() / 2, room.getY() + room.getHeight() / 2);
+            currentFloor.getCanvas().getGraphicsContext2D().setFont(javafx.scene.text.Font.font(15));
+            String text = String.valueOf(currentFloor.getRooms().indexOf(room));
+            if (room.getNrOfPeopleInside() > 0) {
+                text = text + " (" + room.getNrOfPeopleInside() + ")";
+            }
+            currentFloor.getCanvas().getGraphicsContext2D().fillText(text, room.getX() + room.getWidth() / 2, room.getY() + room.getHeight() / 2);
+
             // display current floor number
             currentFloor.getCanvas().getGraphicsContext2D().fillText("Floor " + currentFloor.getFloorNumber(), currentFloor.getCanvas().getWidth() * ((double) 9 / 10), currentFloor.getCanvas().getHeight() * ((double) 1 / 10));
         }

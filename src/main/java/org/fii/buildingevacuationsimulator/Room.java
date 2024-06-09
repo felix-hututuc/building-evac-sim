@@ -4,6 +4,7 @@ import javafx.scene.canvas.GraphicsContext;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import javafx.scene.paint.Color;
 
 import java.util.*;
 
@@ -13,7 +14,7 @@ public class Room {
     private double y;
     private double width;
     private double height;
-    private double space = 0;
+    private int nrOfPeopleInside = 0;
     private final int floorNumber;
     private final Set<Room> neighbours = new HashSet<>();
     private final Set<Door> doors = new HashSet<>();
@@ -77,12 +78,12 @@ public class Room {
         this.height = height;
     }
 
-    public double getSpace() {
-        return space;
+    public int getNrOfPeopleInside() {
+        return nrOfPeopleInside;
     }
 
-    public void setSpace(double space) {
-        this.space = space;
+    public void setNrOfPeopleInside(int nrOfPeopleInside) {
+        this.nrOfPeopleInside = nrOfPeopleInside;
     }
 
     public void addNeighbour(Room room) {
@@ -202,6 +203,7 @@ public class Room {
     }
 
     public void draw(GraphicsContext gc) {
+        gc.setStroke(Color.BLACK);
         gc.setLineWidth(3);
         gc.strokeRect(x, y, width, height);
         gc.setLineWidth(1);

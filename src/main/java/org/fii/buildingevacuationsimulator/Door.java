@@ -3,6 +3,7 @@ package org.fii.buildingevacuationsimulator;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
 import java.io.Serial;
@@ -22,6 +23,7 @@ public class Door extends DefaultWeightedEdge {
     private double y;
 
     private String color = "black";
+    private FlowDirection flowDirection = FlowDirection.NONE;
 
     public Door(Room room1, Room room2, int capacity, double x, double y) {
         this.uuid = UUID.randomUUID().toString();
@@ -48,6 +50,7 @@ public class Door extends DefaultWeightedEdge {
         this.capacity = door.capacity;
         this.x = door.x;
         this.y = door.y;
+        this.color = door.color;
     }
 
     @Override
@@ -101,13 +104,71 @@ public class Door extends DefaultWeightedEdge {
         return String.valueOf((int)capacity);
     }
 
+    public void setFlowDirection(FlowDirection flowDirection) {
+        this.flowDirection = flowDirection;
+    }
+
+    public FlowDirection getFlowDirection() {
+        return flowDirection;
+    }
+
     public void draw(GraphicsContext gc) {
-        gc.setFill(Paint.valueOf("#434649"));
+        gc.setFill(Paint.valueOf(color));
         gc.fillOval(x - 10, y - 10, 20, 20);
         // draw capacity
         gc.setFill(Color.RED);
-        gc.setFont(javafx.scene.text.Font.font(13));
+        gc.setFont(Font.font(13));
         gc.fillText(String.valueOf(capacity), x - 20, y - 20);
+        
+        // draw flow direction
+        Room nextRoom = null;
+        switch (flowDirection){
+            case NONE -> {
+                gc.setFill(Color.BLACK);
+                return;
+            }
+            case SOURCE -> nextRoom = room1;
+            case TARGET -> nextRoom = room2;
+        }
+        gc.setStroke(Paint.valueOf(color));
+        gc.setLineWidth(2);
+        if (nextRoom.isOnLeftEdge(x, y)) {
+            gc.strokeLine(x, y, x + 20, y);
+            gc.strokeLine(x + 20, y, x + 14, y - 6);
+            gc.strokeLine(x + 20, y, x + 14, y + 6);
+        } else if (nextRoom.isOnRightEdge(x, y)) {
+            gc.strokeLine(x, y, x - 20, y);
+            gc.strokeLine(x - 20, y, x - 14, y - 6);
+            gc.strokeLine(x - 20, y, x - 14, y + 6);
+        } else if (nextRoom.isOnTopEdge(x, y)) {
+            gc.strokeLine(x, y, x, y + 20);
+            gc.strokeLine(x, y + 20, x - 6, y + 14);
+            gc.strokeLine(x, y + 20, x + 6, y + 14);
+        } else if (nextRoom.isOnBottomEdge(x, y)) {
+            gc.strokeLine(x, y, x, y - 20);
+            gc.strokeLine(x, y - 20, x - 6, y - 14);
+            gc.strokeLine(x, y - 20, x + 6, y - 14);
+        } else {
+            Room sourceRoom = getTarget() == nextRoom ? getSource() : getTarget();
+            if (sourceRoom.isOnLeftEdge(x, y)) {
+                gc.strokeLine(x, y, x - 20, y);
+                gc.strokeLine(x - 20, y, x - 14, y - 6);
+                gc.strokeLine(x - 20, y, x - 14, y + 6);
+            } else if (sourceRoom.isOnRightEdge(x, y)) {
+                gc.strokeLine(x, y, x + 20, y);
+                gc.strokeLine(x + 20, y, x + 14, y - 6);
+                gc.strokeLine(x + 20, y, x + 14, y + 6);
+            } else if (sourceRoom.isOnTopEdge(x, y)) {
+                gc.strokeLine(x, y, x, y - 20);
+                gc.strokeLine(x, y - 20, x - 6, y - 14);
+                gc.strokeLine(x, y - 20, x + 6, y - 14);
+            } else if (sourceRoom.isOnBottomEdge(x, y)) {
+                gc.strokeLine(x, y, x, y + 20);
+                gc.strokeLine(x, y + 20, x - 6, y + 14);
+                gc.strokeLine(x, y + 20, x + 6, y + 14);
+            }
+        }
+        gc.setStroke(Color.BLACK);
     }
 
     // export a door as a JSON object using the Json library
@@ -137,11 +198,11 @@ public class Door extends DefaultWeightedEdge {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Door door = (Door) o;
-        return uuid.equals(door.uuid) && Double.compare(door.capacity, capacity) == 0;
+        return uuid.equals(door.uuid);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(uuid, capacity);
+        return Objects.hash(uuid);
     }
 }

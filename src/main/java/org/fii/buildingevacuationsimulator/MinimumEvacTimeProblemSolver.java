@@ -3,12 +3,24 @@ package org.fii.buildingevacuationsimulator;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.flow.EdmondsKarpMFImpl;
 
+import java.util.Collections;
+import java.util.Map;
+
 
 public class MinimumEvacTimeProblemSolver implements EvacuationSolver {
-    public void solve(Graph<Room, Door> flowNetwork, Room source, Room sink) {
-        Graph<Room, Door> flowNetworkCopy = createFlowNetworkCopy(flowNetwork);
-        addEdgesFromSourceToAllRooms(flowNetworkCopy, source, sink);
-        computeEvacuationTime(flowNetworkCopy, source, sink);
+    Graph<Room, Door> flowNetwork;
+    Room source;
+    Room sink;
+
+    public Map<Door, Double> solve(Graph<Room, Door> flowNetwork, Room source, Room sink) {
+        this.flowNetwork = createFlowNetworkCopy(flowNetwork);
+        this.source = source;
+        this.sink = sink;
+
+        addEdgesFromSourceToAllRooms();
+        computeEvacuationTime();
+
+        return Collections.emptyMap();
     }
 
     @Override
@@ -21,10 +33,10 @@ public class MinimumEvacTimeProblemSolver implements EvacuationSolver {
         return 0;
     }
 
-    private int getTotalNumberOfPersonsInside(Graph<Room, Door> flowNetwork, Room source, Room target) {
+    private int getTotalNumberOfPersonsInside() {
         int total = 0;
         for (Room room : flowNetwork.vertexSet()) {
-            if (room == source || room == target) {
+            if (room == source || room == sink) {
                 continue;
             }
             if (flowNetwork.containsEdge(source, room)) {
@@ -34,7 +46,7 @@ public class MinimumEvacTimeProblemSolver implements EvacuationSolver {
         return total;
     }
 
-    private void addEdgesFromSourceToAllRooms(Graph<Room, Door> flowNetwork, Room source, Room sink) {
+    private void addEdgesFromSourceToAllRooms() {
         for (Room room : flowNetwork.vertexSet()) {
             if (room == source || room == sink || flowNetwork.containsEdge(source, room)) {
                 continue;
@@ -44,8 +56,8 @@ public class MinimumEvacTimeProblemSolver implements EvacuationSolver {
         }
     }
 
-    public void computeEvacuationTime(Graph<Room, Door> flowNetwork, Room source, Room sink) {
-        int personsInside = getTotalNumberOfPersonsInside(flowNetwork, source, sink);
+    private void computeEvacuationTime() {
+        int personsInside = getTotalNumberOfPersonsInside();
         int time = 0;
         while (personsInside > 0) {
             var maxFlowAlgorithm = new EdmondsKarpMFImpl<>(flowNetwork);

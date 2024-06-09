@@ -37,21 +37,9 @@ public class BuildingApplication extends Application {
         stairButton.setOnAction(buildingController.stairButtonHandle());
         toolBar.getItems().add(stairButton);
 
-        Button sourceButton = new Button("Select Sources");
-        sourceButton.setOnAction(buildingController.sourceButtonHandle());
-        toolBar.getItems().add(sourceButton);
-
-        Button clearSourceButton = new Button("Clear Sources");
-        clearSourceButton.setOnAction(buildingController.clearSourceButtonHandle());
-        toolBar.getItems().add(clearSourceButton);
-
-        Button maxFlowButton = new Button("Max Flow");
-        maxFlowButton.setOnAction(buildingController.maxFlowHandle());
-        toolBar.getItems().add(maxFlowButton);
-
-        Button showGraphButton = new Button("Show Graph");
-        showGraphButton.setOnAction(buildingController.showGraphHandle());
-        toolBar.getItems().add(showGraphButton);
+        Button removeDoorButton = new Button("Remove Door / Stair");
+        removeDoorButton.setOnAction(buildingController.removeDoorHandle());
+        toolBar.getItems().add(removeDoorButton);
 
         MenuItem newFloorButton = new MenuItem("New Floor");
         newFloorButton.setOnAction(buildingController.newFloorHandle(root));
@@ -61,9 +49,21 @@ public class BuildingApplication extends Application {
         menuButton.getItems().add(newFloorButton);
         toolBar.getItems().add(menuButton);
 
-        Button removeDoorButton = new Button("Remove Door");
-        removeDoorButton.setOnAction(buildingController.removeDoorHandle());
-        toolBar.getItems().add(removeDoorButton);
+        Button sourceButton = new Button("Select Sources");
+        sourceButton.setOnAction(buildingController.sourceButtonHandle());
+        toolBar.getItems().add(sourceButton);
+
+        Button clearSourceButton = new Button("Clear Sources");
+        clearSourceButton.setOnAction(buildingController.clearSourceButtonHandle());
+        toolBar.getItems().add(clearSourceButton);
+
+        Button maxFlowButton = new Button("Run Simulation");
+        maxFlowButton.setOnAction(buildingController.maxFlowHandle());
+        toolBar.getItems().add(maxFlowButton);
+
+        Button showGraphButton = new Button("Show Graph Visualisation");
+        showGraphButton.setOnAction(buildingController.showGraphHandle());
+        toolBar.getItems().add(showGraphButton);
 
         Button exportButton = new Button("Export");
         exportButton.setOnAction(buildingController.exportHandle());
@@ -73,7 +73,7 @@ public class BuildingApplication extends Application {
         importButton.setOnAction(buildingController.importHandle(root));
         toolBar.getItems().add(importButton);
 
-        Button resetButton = new Button("Reset");
+        Button resetButton = new Button("Reset All");
         resetButton.setOnAction(buildingController.resetHandle(root));
         toolBar.getItems().add(resetButton);
 

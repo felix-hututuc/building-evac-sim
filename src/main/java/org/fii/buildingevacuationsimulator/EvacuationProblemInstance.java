@@ -12,15 +12,12 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 public class EvacuationProblemInstance {
     private final Graph<Room, Door> flowNetwork = new SimpleWeightedGraph<>(Door.class);
     private final Room source = new Room(1,1,0,0, -1);
     private final Room target = new Room(0,0,0,0, -1);
     private EvacuationSolver evacuationProblemSolver;
-
-    Random rand = new Random();
 
     public EvacuationProblemInstance() {
         flowNetwork.addVertex(source);
@@ -73,30 +70,6 @@ public class EvacuationProblemInstance {
 
     public void clearSourceEdges() {
         flowNetwork.removeAllEdges(flowNetwork.edgesOf(source));
-    }
-
-    private void colorEdges() {
-        System.out.println("Coloring edges");
-        for (Door door : flowNetwork.edgesOf(source)) {
-            //to get rainbow, pastel colors
-            final float hue = rand.nextFloat();
-            final float saturation = 0.9f;//1.0 for brilliant, 0.0 for dull
-            final float luminance = 1.0f; //1.0 for brighter, 0.0 for black
-            var color = java.awt.Color.getHSBColor(hue, saturation, luminance);
-            String colorStr = "#" + Integer.toHexString(color.getRGB()).substring(2);
-            door.setColor(colorStr);
-            Room nextRoom = evacuationProblemSolver.getFlowDirection(door);
-            if (evacuationProblemSolver.getFlow(door) == 0) continue; // skip source from which no flow leaves
-            while (nextRoom != target) {
-                for (Door nextDoor : flowNetwork.edgesOf(nextRoom)) {
-                    if (evacuationProblemSolver.getFlow(nextDoor) != 0 && nextDoor.getColor().equals("black") && evacuationProblemSolver.getFlowDirection(nextDoor) != nextRoom) {
-                        nextDoor.setColor(colorStr);
-                        nextRoom = evacuationProblemSolver.getFlowDirection(nextDoor);
-                        break;
-                    }
-                }
-            }
-        }
     }
 
     public void showGraph() throws IOException {

@@ -3,8 +3,10 @@ package org.fii.buildingevacuationsimulator;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
+import java.util.Map;
+
 public interface EvacuationSolver {
-    public void solve(Graph<Room, Door> flowNetwork, Room source, Room sink);
+    Map<Door, Double> solve(Graph<Room, Door> flowNetwork, Room source, Room sink);
 
     default Graph<Room, Door> createFlowNetworkCopy(Graph<Room, Door> flowNetwork) {
         Graph<Room, Door> flowNetworkCopy = new SimpleWeightedGraph<>(Door.class);
@@ -19,6 +21,6 @@ public interface EvacuationSolver {
         return flowNetworkCopy;
     }
 
-    public Room getFlowDirection(Door door);
-    public int getFlow(Door door);
+    Room getFlowDirection(Door door);
+    int getFlow(Door door);
 }
