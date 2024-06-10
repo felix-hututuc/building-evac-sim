@@ -3,7 +3,6 @@ package org.fii.buildingevacuationsimulator;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.flow.EdmondsKarpMFImpl;
 
-import java.util.Map;
 import java.util.Random;
 
 public class DisjointPathsProblemSolver implements EvacuationSolver {
@@ -13,7 +12,7 @@ public class DisjointPathsProblemSolver implements EvacuationSolver {
     Room sink;
     Random rand = new Random();
 
-    public Map<Door, Double> solve(Graph<Room, Door> flowNetwork, Room source, Room sink) {
+    public String solve(Graph<Room, Door> flowNetwork, Room source, Room sink) {
         this.flowNetworkCopy = createFlowNetworkCopy(flowNetwork);
         this.source = source;
         this.sink = sink;
@@ -22,16 +21,9 @@ public class DisjointPathsProblemSolver implements EvacuationSolver {
 
         this.maxFlowAlgorithm = new EdmondsKarpMFImpl<>(this.flowNetworkCopy);
         var maxFlow = maxFlowAlgorithm.calculateMaximumFlow(source, sink);
-        var flowMap = maxFlowAlgorithm.getFlowMap();
 
         colorEdges();
         int numberOfSources = this.flowNetworkCopy.edgesOf(source).size();
-
-        if (maxFlow == numberOfSources) {
-            System.out.println("Enough disjoint paths exist");
-        } else {
-            System.out.println("Not enough disjoint paths exist");
-        }
 
         for (Door door : flowNetwork.edgeSet()) {
             Door copyEdge = flowNetworkCopy.getEdge(door.getSource(), door.getTarget());
@@ -40,7 +32,16 @@ public class DisjointPathsProblemSolver implements EvacuationSolver {
             door.setFlowDirection(copyEdge.getFlowDirection());
         }
 
-        return flowMap;
+        String result;
+        if (maxFlow == numberOfSources) {
+            System.out.println("Enough disjoint paths exist");
+            result = "Enough disjoint paths exist!";
+        } else {
+            System.out.println("Not enough disjoint paths exist");
+            result = "Not enough disjoint paths exist!";
+        }
+
+        return result;
     }
 
     private void init() {

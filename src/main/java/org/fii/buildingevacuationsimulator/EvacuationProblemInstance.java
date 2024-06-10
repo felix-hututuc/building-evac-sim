@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class EvacuationProblemInstance {
@@ -24,10 +25,6 @@ public class EvacuationProblemInstance {
         flowNetwork.addVertex(target);
     }
 
-    public Graph<Room, Door> getFlowNetwork() {
-        return flowNetwork;
-    }
-
     public void addVertex(Room room) {
         flowNetwork.addVertex(room);
     }
@@ -39,11 +36,6 @@ public class EvacuationProblemInstance {
     public void addEdge(Door door) {
         flowNetwork.addEdge(door.getSource(), door.getTarget(), door);
         flowNetwork.setEdgeWeight(door, door.getWeight());
-    }
-
-    public void addEdge(Room room1, Room room2, int capacity) {
-        flowNetwork.addEdge(room1, room2);
-        flowNetwork.setEdgeWeight(flowNetwork.getEdge(room1, room2), capacity);
     }
 
     public void addEdgeToSource(Room room, int capacity) {
@@ -69,7 +61,8 @@ public class EvacuationProblemInstance {
     }
 
     public void clearSourceEdges() {
-        flowNetwork.removeAllEdges(flowNetwork.edgesOf(source));
+        var sources = flowNetwork.edgesOf(source);
+        flowNetwork.removeAllEdges(sources);
     }
 
     public void exportGraphAsDot() throws IOException {
@@ -101,8 +94,8 @@ public class EvacuationProblemInstance {
         pb.start();
     }
 
-    public void executeSimulation() {
-        evacuationProblemSolver.solve(flowNetwork, source, target);
+    public String executeSimulation() {
+        return evacuationProblemSolver.solve(flowNetwork, source, target);
     }
 
     public void resetSimulation() {
@@ -114,5 +107,20 @@ public class EvacuationProblemInstance {
 
     public boolean isProblemSet() {
         return evacuationProblemSolver != null;
+    }
+
+    public List<Door> getSources() {
+        return flowNetwork.edgesOf(source).stream().toList();
+    }
+
+    public boolean removeSource(double x, double y) {
+        for (Room room : flowNetwork.vertexSet()) {
+            if (room.isInside(x, y) && room != source && room != target) {
+                flowNetwork.removeEdge(source, room);
+                room.setNrOfPeopleInside(0);
+                return true;
+            }
+        }
+        return false;
     }
 }

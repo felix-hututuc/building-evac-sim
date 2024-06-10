@@ -3,24 +3,21 @@ package org.fii.buildingevacuationsimulator;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.flow.EdmondsKarpMFImpl;
 
-import java.util.Collections;
-import java.util.Map;
-
 
 public class MinimumEvacTimeProblemSolver implements EvacuationSolver {
     Graph<Room, Door> flowNetwork;
     Room source;
     Room sink;
 
-    public Map<Door, Double> solve(Graph<Room, Door> flowNetwork, Room source, Room sink) {
+    public String solve(Graph<Room, Door> flowNetwork, Room source, Room sink) {
         this.flowNetwork = createFlowNetworkCopy(flowNetwork);
         this.source = source;
         this.sink = sink;
 
         addEdgesFromSourceToAllRooms();
-        computeEvacuationTime();
+        int time = computeEvacuationTime();
 
-        return Collections.emptyMap();
+        return "Evacuation time = " + time;
     }
 
     @Override
@@ -56,7 +53,7 @@ public class MinimumEvacTimeProblemSolver implements EvacuationSolver {
         }
     }
 
-    private void computeEvacuationTime() {
+    private int computeEvacuationTime() {
         int personsInside = getTotalNumberOfPersonsInside();
         int time = 0;
         while (personsInside > 0) {
@@ -79,5 +76,6 @@ public class MinimumEvacTimeProblemSolver implements EvacuationSolver {
             time++;
         }
         System.out.println("Evacuation time = " + time);
+        return time;
     }
 }

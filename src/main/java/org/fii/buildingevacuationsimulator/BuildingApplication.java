@@ -53,7 +53,7 @@ public class BuildingApplication extends Application {
         sourceButton.setOnAction(buildingController.sourceButtonHandle());
         toolBar.getItems().add(sourceButton);
 
-        Button clearSourceButton = new Button("Clear Sources");
+        Button clearSourceButton = new Button("Remove Source");
         clearSourceButton.setOnAction(buildingController.clearSourceButtonHandle());
         toolBar.getItems().add(clearSourceButton);
 

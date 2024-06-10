@@ -1,0 +1,196 @@
+{
+    "sink": {
+        "uuid": "90b4e0d3-8fb8-478f-a114-bdc281074a5c",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "floor": -1
+    },
+    "floorsNr": 1,
+    "currentFloor": 0,
+    "rooms": [
+        {
+            "uuid": "3ffd03f8-3e7b-4194-80b2-08792b27ee06",
+            "x": 300.0,
+            "y": 215.0,
+            "width": 158.0,
+            "height": 485.0,
+            "floor": 0
+        },
+        {
+            "uuid": "2f32add3-3ea8-4d74-8bb6-dd45ccb463c7",
+            "x": 458.0,
+            "y": 215.0,
+            "width": 442.0,
+            "height": 275.0,
+            "floor": 0
+        },
+        {
+            "uuid": "20806e09-c349-4988-8cd3-9b6026adb3a1",
+            "x": 458.0,
+            "y": 490.0,
+            "width": 224.0,
+            "height": 210.0,
+            "floor": 0
+        },
+        {
+            "uuid": "d3b4ddaa-ed40-49f9-82b9-62e7eb6f0e8d",
+            "x": 682.0,
+            "y": 490.0,
+            "width": 218.0,
+            "height": 210.0,
+            "floor": 0
+        },
+        {
+            "uuid": "a33fd144-2820-4ba3-8b0b-71a3c5651df9",
+            "x": 300.0,
+            "y": 100.0,
+            "width": 432.0,
+            "height": 115.0,
+            "floor": 0
+        },
+        {
+            "uuid": "28651a30-716a-4571-8b20-863dfdaaa6e3",
+            "x": 732.0,
+            "y": 100.0,
+            "width": 168.0,
+            "height": 115.0,
+            "floor": 0
+        }
+    ],
+    "doors": [
+        {
+            "uuid": "c9ffa8ce-3826-491a-a465-47eec1ff4847",
+            "room1": "3ffd03f8-3e7b-4194-80b2-08792b27ee06",
+            "room2": "2f32add3-3ea8-4d74-8bb6-dd45ccb463c7",
+            "capacity": 2,
+            "x": 458.0,
+            "y": 349.0
+        },
+        {
+            "uuid": "a557e103-06fe-4cf8-a4b6-02ec31ae28f6",
+            "room1": "3ffd03f8-3e7b-4194-80b2-08792b27ee06",
+            "room2": "90b4e0d3-8fb8-478f-a114-bdc281074a5c",
+            "capacity": 1,
+            "x": 300.0,
+            "y": 439.0
+        },
+        {
+            "uuid": "76d0769a-ade0-4e5e-b6b6-4079c944937d",
+            "room1": "2f32add3-3ea8-4d74-8bb6-dd45ccb463c7",
+            "room2": "a33fd144-2820-4ba3-8b0b-71a3c5651df9",
+            "capacity": 2,
+            "x": 580.0,
+            "y": 215.0
+        },
+        {
+            "uuid": "21f71def-6e3c-4560-b0af-3d7066f9f7c7",
+            "room1": "2f32add3-3ea8-4d74-8bb6-dd45ccb463c7",
+            "room2": "90b4e0d3-8fb8-478f-a114-bdc281074a5c",
+            "capacity": 4,
+            "x": 900.0,
+            "y": 359.0
+        },
+        {
+            "uuid": "35e5b387-cfd6-486e-a955-317a09682a7c",
+            "room1": "2f32add3-3ea8-4d74-8bb6-dd45ccb463c7",
+            "room2": "20806e09-c349-4988-8cd3-9b6026adb3a1",
+            "capacity": 1,
+            "x": 564.0,
+            "y": 490.0
+        },
+        {
+            "uuid": "c9ffa8ce-3826-491a-a465-47eec1ff4847",
+            "room1": "3ffd03f8-3e7b-4194-80b2-08792b27ee06",
+            "room2": "2f32add3-3ea8-4d74-8bb6-dd45ccb463c7",
+            "capacity": 2,
+            "x": 458.0,
+            "y": 349.0
+        },
+        {
+            "uuid": "5c6057a3-ff0e-45a6-8aca-86ffad6baf87",
+            "room1": "2f32add3-3ea8-4d74-8bb6-dd45ccb463c7",
+            "room2": "d3b4ddaa-ed40-49f9-82b9-62e7eb6f0e8d",
+            "capacity": 1,
+            "x": 786.0,
+            "y": 490.0
+        },
+        {
+            "uuid": "35e5b387-cfd6-486e-a955-317a09682a7c",
+            "room1": "2f32add3-3ea8-4d74-8bb6-dd45ccb463c7",
+            "room2": "20806e09-c349-4988-8cd3-9b6026adb3a1",
+            "capacity": 1,
+            "x": 564.0,
+            "y": 490.0
+        },
+        {
+            "uuid": "5c6057a3-ff0e-45a6-8aca-86ffad6baf87",
+            "room1": "2f32add3-3ea8-4d74-8bb6-dd45ccb463c7",
+            "room2": "d3b4ddaa-ed40-49f9-82b9-62e7eb6f0e8d",
+            "capacity": 1,
+            "x": 786.0,
+            "y": 490.0
+        },
+        {
+            "uuid": "76d0769a-ade0-4e5e-b6b6-4079c944937d",
+            "room1": "2f32add3-3ea8-4d74-8bb6-dd45ccb463c7",
+            "room2": "a33fd144-2820-4ba3-8b0b-71a3c5651df9",
+            "capacity": 2,
+            "x": 580.0,
+            "y": 215.0
+        },
+        {
+            "uuid": "78d7c3dc-204a-4477-a521-07c43084bf1b",
+            "room1": "a33fd144-2820-4ba3-8b0b-71a3c5651df9",
+            "room2": "90b4e0d3-8fb8-478f-a114-bdc281074a5c",
+            "capacity": 1,
+            "x": 518.0,
+            "y": 100.0
+        },
+        {
+            "uuid": "08cf5cd0-6a32-4e68-bdfb-3604b0a0fbc5",
+            "room1": "a33fd144-2820-4ba3-8b0b-71a3c5651df9",
+            "room2": "28651a30-716a-4571-8b20-863dfdaaa6e3",
+            "capacity": 1,
+            "x": 732.0,
+            "y": 153.0
+        },
+        {
+            "uuid": "08cf5cd0-6a32-4e68-bdfb-3604b0a0fbc5",
+            "room1": "a33fd144-2820-4ba3-8b0b-71a3c5651df9",
+            "room2": "28651a30-716a-4571-8b20-863dfdaaa6e3",
+            "capacity": 1,
+            "x": 732.0,
+            "y": 153.0
+        }
+    ],
+    "stairs": [
+    ],
+    "sources": [
+        {
+            "uuid": "954337d5-7989-4ff9-ad59-2a5bf5c5ba2c",
+            "room1": "3f6d2b4e-2d74-46b7-995e-02751d3610b6",
+            "room2": "28651a30-716a-4571-8b20-863dfdaaa6e3",
+            "capacity": 7,
+            "x": 0.0,
+            "y": 0.0
+        },
+        {
+            "uuid": "379eac8a-9831-4792-b61a-85c5471012ba",
+            "room1": "3f6d2b4e-2d74-46b7-995e-02751d3610b6",
+            "room2": "20806e09-c349-4988-8cd3-9b6026adb3a1",
+            "capacity": 21,
+            "x": 0.0,
+            "y": 0.0
+        },
+        {
+            "uuid": "40e1c32e-4a08-4f92-aeea-d9eabf54ab12",
+            "room1": "3f6d2b4e-2d74-46b7-995e-02751d3610b6",
+            "room2": "d3b4ddaa-ed40-49f9-82b9-62e7eb6f0e8d",
+            "capacity": 17,
+            "x": 0.0,
+            "y": 0.0
+        }
+    ]
+}

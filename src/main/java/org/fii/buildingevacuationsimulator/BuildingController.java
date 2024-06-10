@@ -7,6 +7,7 @@ import jakarta.json.stream.JsonGenerator;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Alert;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
@@ -402,7 +403,6 @@ public class BuildingController {
         };
     }
 
-
     public EventHandler<MouseEvent> sourceClickCanvasHandle() {
         // add edge between source and clicked room
         return event -> {
@@ -450,8 +450,14 @@ public class BuildingController {
                 System.out.println("Problem not set");
                 return;
             }
-            evacuationProblem.executeSimulation();
+            String result = evacuationProblem.executeSimulation();
             draw();
+
+            // open a prompt with the result
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setHeaderText("Simulation result");
+            alert.setContentText(result);
+            alert.show();
         };
     }
 
@@ -570,6 +576,11 @@ public class BuildingController {
                                 .map(Stair::toJson)
                                 .toList()
                 ))
+                .add("sources", Json.createArrayBuilder(
+                        evacuationProblem.getSources().stream()
+                                .map(Door::toJson)
+                                .toList()
+                ))
                 .build();
     }
 
@@ -674,6 +685,15 @@ public class BuildingController {
             buildingController.evacuationProblem.addEdge(stair);
         });
 
+        jsonObject.getJsonArray("sources").forEach(sourceJson -> {
+            Room room = rooms.stream()
+                    .filter(r -> r.getUuid().equals(((JsonObject) sourceJson).getString("room2")))
+                    .findFirst()
+                    .orElseThrow();
+            buildingController.evacuationProblem.addEdgeToSource(room, ((JsonObject) sourceJson).getInt("capacity"));
+            room.setNrOfPeopleInside(((JsonObject) sourceJson).getInt("capacity"));
+        });
+
         return buildingController;
     }
 
@@ -761,10 +781,27 @@ public class BuildingController {
         };
     }
 
-    public EventHandler<ActionEvent> clearSourceButtonHandle() {
+    public EventHandler<MouseEvent> removeSource() {
         return event -> {
-            evacuationProblem.clearSourceEdges();
-            System.out.println("Sources cleared");
+            var x = event.getX();
+            var y = event.getY();
+            boolean removed = evacuationProblem.removeSource(x, y);
+            if (removed) {
+                draw();
+            } else {
+                System.out.println("Selected room is not a source.");
+            }
+        };
+    }
+
+    public EventHandler<ActionEvent> clearSourceButtonHandle() {
+        return _ -> {
+            currentFloor.getCanvas().setOnMousePressed(removeSource());
+            currentFloor.getCanvas().setOnMouseReleased(event1 -> {
+                currentFloor.getCanvas().setOnMousePressed(canvasClickResize());
+                currentFloor.getCanvas().setOnMouseReleased(canvasClickRelease());
+                currentFloor.getCanvas().setOnMouseDragged(canvasDragResize());
+            });
         };
     }
 
