@@ -6,27 +6,27 @@ import org.jgrapht.alg.flow.EdmondsKarpMFImpl;
 import java.util.Random;
 
 public class DisjointPathsProblemSolver implements EvacuationSolver {
-    Graph<Room, Door> flowNetworkCopy;
+    Graph<Room, Door> flowNetwork;
     EdmondsKarpMFImpl<Room, Door> maxFlowAlgorithm;
     Room source;
     Room sink;
     Random rand = new Random();
 
     public String solve(Graph<Room, Door> flowNetwork, Room source, Room sink) {
-        this.flowNetworkCopy = createFlowNetworkCopy(flowNetwork);
+        this.flowNetwork = createFlowNetworkCopy(flowNetwork);
         this.source = source;
         this.sink = sink;
 
         init();
 
-        this.maxFlowAlgorithm = new EdmondsKarpMFImpl<>(this.flowNetworkCopy);
+        this.maxFlowAlgorithm = new EdmondsKarpMFImpl<>(this.flowNetwork);
         var maxFlow = maxFlowAlgorithm.calculateMaximumFlow(source, sink);
 
         colorEdges();
-        int numberOfSources = this.flowNetworkCopy.edgesOf(source).size();
+        int numberOfSources = this.flowNetwork.edgesOf(source).size();
 
         for (Door door : flowNetwork.edgeSet()) {
-            Door copyEdge = flowNetworkCopy.getEdge(door.getSource(), door.getTarget());
+            Door copyEdge = this.flowNetwork.getEdge(door.getSource(), door.getTarget());
             door.setColor(copyEdge.getColor());
 
             door.setFlowDirection(copyEdge.getFlowDirection());
@@ -45,9 +45,9 @@ public class DisjointPathsProblemSolver implements EvacuationSolver {
     }
 
     private void init() {
-        for (Door door : this.flowNetworkCopy.edgeSet()) {
+        for (Door door : this.flowNetwork.edgeSet()) {
             door.setWeight(1);
-            this.flowNetworkCopy.setEdgeWeight(door, 1);
+            this.flowNetwork.setEdgeWeight(door, 1);
 
             door.setColor("black");
         }
@@ -64,14 +64,14 @@ public class DisjointPathsProblemSolver implements EvacuationSolver {
 
     private void colorEdges() {
         System.out.println("Coloring edges");
-        for (Door door : this.flowNetworkCopy.edgesOf(source)) {
+        for (Door door : this.flowNetwork.edgesOf(source)) {
             String color = getRandomColor();
             door.setColor(color);
             door.setFlowDirection(FlowDirection.TARGET);
             Room nextRoom = getFlowDirection(door);
             if (getFlow(door) == 0) continue; // skip source from which no flow leaves
             while (nextRoom != sink) {
-                for (Door nextDoor : this.flowNetworkCopy.edgesOf(nextRoom)) {
+                for (Door nextDoor : this.flowNetwork.edgesOf(nextRoom)) {
                     if (getFlow(nextDoor) != 0 && nextDoor.getColor().equals("black") && getFlowDirection(nextDoor) != nextRoom) {
                         nextDoor.setColor(color);
                         if (nextDoor.getSource() == nextRoom) {
@@ -87,7 +87,6 @@ public class DisjointPathsProblemSolver implements EvacuationSolver {
         }
     }
 
-    @Override
     public Room getFlowDirection(Door door) {
         if (maxFlowAlgorithm == null) {
             System.out.println("Max flow algorithm not initialized");
@@ -97,7 +96,6 @@ public class DisjointPathsProblemSolver implements EvacuationSolver {
         return maxFlowAlgorithm.getFlowDirection(door);
     }
 
-    @Override
     public int getFlow(Door door) {
         if (maxFlowAlgorithm == null) {
             System.out.println("Max flow algorithm not initialized");

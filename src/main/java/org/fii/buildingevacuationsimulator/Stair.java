@@ -39,7 +39,7 @@ public class Stair extends Door {
 
     public void draw(GraphicsContext gc, int currentFloor) {
         gc.setFill(Paint.valueOf(this.getColor()));
-        if (currentFloor == floor2.getFloorNumber()) {
+        if (currentFloor == floor1.getFloorNumber()) {
             gc.strokeLine(getX(), getY(), getX() + 10, getY());
             gc.strokeLine(getX() + 10, getY(), getX() + 10, getY() + 10);
             gc.strokeLine(getX() + 10, getY() + 10, getX() + 20, getY() + 10);

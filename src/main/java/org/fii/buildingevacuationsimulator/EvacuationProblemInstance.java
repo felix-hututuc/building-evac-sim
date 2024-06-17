@@ -17,12 +17,12 @@ import java.util.Map;
 public class EvacuationProblemInstance {
     private final Graph<Room, Door> flowNetwork = new SimpleWeightedGraph<>(Door.class);
     private final Room source = new Room(1,1,0,0, -1);
-    private final Room target = new Room(0,0,0,0, -1);
+    private final Room sink = new Room(0,0,0,0, -1);
     private EvacuationSolver evacuationProblemSolver;
 
     public EvacuationProblemInstance() {
         flowNetwork.addVertex(source);
-        flowNetwork.addVertex(target);
+        flowNetwork.addVertex(sink);
     }
 
     public void addVertex(Room room) {
@@ -52,8 +52,8 @@ public class EvacuationProblemInstance {
         flowNetwork.removeAllEdges(doors);
     }
 
-    public Room getTarget() {
-        return target;
+    public Room getSink() {
+        return sink;
     }
 
     public void setProblem(EvacuationSolver evacProblem) {
@@ -70,7 +70,7 @@ public class EvacuationProblemInstance {
         imgFile.createNewFile();
         // export the graph as a png image
         DOTExporter<Room, Door> graphExporter = new DOTExporter<>(room -> {
-            if (room == target) {
+            if (room == sink) {
                 return "t";
             } else if (room == source) {
                 return "s";
@@ -95,7 +95,7 @@ public class EvacuationProblemInstance {
     }
 
     public String executeSimulation() {
-        return evacuationProblemSolver.solve(flowNetwork, source, target);
+        return evacuationProblemSolver.solve(flowNetwork, source, sink);
     }
 
     public void resetSimulation() {
@@ -115,7 +115,7 @@ public class EvacuationProblemInstance {
 
     public boolean removeSource(double x, double y) {
         for (Room room : flowNetwork.vertexSet()) {
-            if (room.isInside(x, y) && room != source && room != target) {
+            if (room.isInside(x, y) && room != source && room != sink) {
                 flowNetwork.removeEdge(source, room);
                 room.setNrOfPeopleInside(0);
                 return true;

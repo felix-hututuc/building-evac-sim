@@ -6,6 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ToolBar;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
@@ -15,6 +16,8 @@ public class BuildingApplication extends Application {
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Building Evacuation Simulator");
+
+        primaryStage.getIcons().add(new Image("file:src\\main\\resources\\buildingIcon.png"));
 
         buildingController.draw();
 

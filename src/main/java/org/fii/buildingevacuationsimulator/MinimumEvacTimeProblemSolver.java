@@ -20,16 +20,6 @@ public class MinimumEvacTimeProblemSolver implements EvacuationSolver {
         return "Evacuation time = " + time;
     }
 
-    @Override
-    public Room getFlowDirection(Door door) {
-        return null;
-    }
-
-    @Override
-    public int getFlow(Door door) {
-        return 0;
-    }
-
     private int getTotalNumberOfPersonsInside() {
         int total = 0;
         for (Room room : flowNetwork.vertexSet()) {

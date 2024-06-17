@@ -1,0 +1,312 @@
+@startuml
+
+/' diagram meta data start
+config=StructureConfiguration;
+{
+  "projectClassification": {
+    "searchMode": "OpenProject", // OpenProject, AllProjects
+    "includedProjects": "",
+    "pathEndKeywords": "*.impl",
+    "isClientPath": "",
+    "isClientName": "",
+    "isTestPath": "",
+    "isTestName": "",
+    "isMappingPath": "",
+    "isMappingName": "",
+    "isDataAccessPath": "",
+    "isDataAccessName": "",
+    "isDataStructurePath": "",
+    "isDataStructureName": "",
+    "isInterfaceStructuresPath": "",
+    "isInterfaceStructuresName": "",
+    "isEntryPointPath": "",
+    "isEntryPointName": "",
+    "treatFinalFieldsAsMandatory": false
+  },
+  "graphRestriction": {
+    "classPackageExcludeFilter": "",
+    "classPackageIncludeFilter": "",
+    "classNameExcludeFilter": "",
+    "classNameIncludeFilter": "",
+    "methodNameExcludeFilter": "",
+    "methodNameIncludeFilter": "",
+    "removeByInheritance": "", // inheritance/annotation based filtering is done in a second step
+    "removeByAnnotation": "",
+    "removeByClassPackage": "", // cleanup the graph after inheritance/annotation based filtering is done
+    "removeByClassName": "",
+    "cutMappings": false,
+    "cutEnum": false,
+    "cutTests": true,
+    "cutClient": true,
+    "cutDataAccess": false,
+    "cutInterfaceStructures": false,
+    "cutDataStructures": false,
+    "cutGetterAndSetter": false,
+    "cutConstructors": false
+  },
+  "graphTraversal": {
+    "forwardDepth": 7,
+    "backwardDepth": 7,
+    "classPackageExcludeFilter": "",
+    "classPackageIncludeFilter": "",
+    "classNameExcludeFilter": "",
+    "classNameIncludeFilter": "",
+    "methodNameExcludeFilter": "",
+    "methodNameIncludeFilter": "",
+    "hideMappings": false,
+    "hideDataStructures": false,
+    "hidePrivateMethods": true,
+    "hideInterfaceCalls": false, // indirection: implementation -> interface (is hidden) -> implementation
+    "onlyShowApplicationEntryPoints": false, // root node is included
+    "useMethodCallsForStructureDiagram": "No" // ForwardOnly, BothDirections, No
+  },
+  "details": {
+    "aggregation": "GroupByClass", // ByClass, GroupByClass, None
+    "showClassGenericTypes": true,
+    "showMethods": false,
+    "showMethodParameterNames": false,
+    "showMethodParameterTypes": false,
+    "showMethodReturnType": false,
+    "showPackageLevels": 0,
+    "showDetailedClassStructure": true
+  },
+  "rootClass": "org.fii.buildingevacuationsimulator.BuildingApplication",
+  "extensionCallbackMethod": "" // qualified.class.name#methodName - signature: public static String method(String)
+}
+diagram meta data end '/
+
+
+
+digraph g {
+    rankdir="TB"
+    splines=polyline
+    
+
+'nodes 
+BuildingApplication1355485003[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)BuildingApplication</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >#   buildingController: BuildingController [0..1]</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+BuildingController1355485003[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)BuildingController</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   currentFloor: Floor [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   evacuationProblem: EvacuationProblemInstance [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   floors: List&lt;Floor&gt; [0..*]</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+DisjointPathsProblemSolver1355485003[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)DisjointPathsProblemSolver</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >#   flowNetworkCopy: Graph&lt;Room, Door&gt; [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >#   maxFlowAlgorithm: EdmondsKarpMFImpl&lt;Room, Door&gt; [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >#   rand: Random [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >#   sink: Room [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >#   source: Room [0..1]</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+Door1355485003[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)Door</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   capacity: int [1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   color: String [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   flowDirection: FlowDirection [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   room1: Room [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   room2: Room [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   uuid: String [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   x: double [1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   y: double [1]</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+EvacuationProblemInstance1355485003[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)EvacuationProblemInstance</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   evacuationProblemSolver: EvacuationSolver [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   flowNetwork: Graph&lt;Room, Door&gt; [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   source: Room [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   target: Room [0..1]</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+EvacuationSolver1355485003[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(I)EvacuationSolver</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ createFlowNetworkCopy()</TD></TR>
+<TR><TD ALIGN="LEFT" >+ solve()</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#F1E5FD"
+];
+
+Floor1355485003[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)Floor</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   canvas: Canvas [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   floorNumber: int [1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   rooms: List&lt;Room&gt; [0..*]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   stairs: List&lt;Stair&gt; [0..*]</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+FlowDirection1355485003[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(E)FlowDirection</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+   NONE: FlowDirection [1]</TD></TR>
+<TR><TD ALIGN="LEFT" >+   SOURCE: FlowDirection [1]</TD></TR>
+<TR><TD ALIGN="LEFT" >+   TARGET: FlowDirection [1]</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#DCFBD5"
+];
+
+MinimumEvacTimeProblemSolver1355485003[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)MinimumEvacTimeProblemSolver</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >#   flowNetwork: Graph&lt;Room, Door&gt; [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >#   sink: Room [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >#   source: Room [0..1]</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+Room1355485003[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)Room</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   doors: Set&lt;Door&gt; [0..*]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   draggingDown: boolean [1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   draggingLeft: boolean [1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   draggingRight: boolean [1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   draggingUp: boolean [1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   floorNumber: int [1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   height: double [1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   neighbours: Set&lt;Room&gt; [0..*]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   nrOfPeopleInside: int [1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   uuid: String [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   width: double [1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   x: double [1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   y: double [1]</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+Stair1355485003[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)Stair</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   floor1: Floor [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   floor2: Floor [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   uuid: String [0..1]</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+'edges    
+BuildingApplication1355485003 -> BuildingController1355485003[label="buildingController
+[0..1]"];
+BuildingController1355485003 -> EvacuationProblemInstance1355485003[label="evacuationProblem
+[0..1]"];
+BuildingController1355485003 -> Floor1355485003[label="currentFloor
+[0..1]"];
+BuildingController1355485003 -> Floor1355485003[label="floors
+[0..*]"];
+DisjointPathsProblemSolver1355485003 -> Door1355485003[label="flowNetworkCopy
+[0..1]"];
+DisjointPathsProblemSolver1355485003 -> Door1355485003[label="maxFlowAlgorithm
+[0..1]"];
+DisjointPathsProblemSolver1355485003 -> Room1355485003[label="flowNetworkCopy
+[0..1]"];
+DisjointPathsProblemSolver1355485003 -> Room1355485003[label="maxFlowAlgorithm
+[0..1]"];
+DisjointPathsProblemSolver1355485003 -> Room1355485003[label="sink
+[0..1]"];
+DisjointPathsProblemSolver1355485003 -> Room1355485003[label="source
+[0..1]"];
+Door1355485003 -> FlowDirection1355485003[label="flowDirection
+[0..1]"];
+Door1355485003 -> Room1355485003[label="room1
+[0..1]"];
+Door1355485003 -> Room1355485003[label="room2
+[0..1]"];
+Door1355485003 -> Stair1355485003[arrowhead=none, arrowtail=empty, dir=both];
+EvacuationProblemInstance1355485003 -> Door1355485003[label="flowNetwork
+[0..1]"];
+EvacuationProblemInstance1355485003 -> EvacuationSolver1355485003[label="evacuationProblemSolver
+[0..1]"];
+EvacuationProblemInstance1355485003 -> Room1355485003[label="flowNetwork
+[0..1]"];
+EvacuationProblemInstance1355485003 -> Room1355485003[label="source
+[0..1]"];
+EvacuationProblemInstance1355485003 -> Room1355485003[label="target
+[0..1]"];
+EvacuationSolver1355485003 -> DisjointPathsProblemSolver1355485003[arrowhead=none, arrowtail=empty, dir=both];
+EvacuationSolver1355485003 -> MinimumEvacTimeProblemSolver1355485003[arrowhead=none, arrowtail=empty, dir=both];
+Floor1355485003 -> Room1355485003[label="rooms
+[0..*]"];
+Floor1355485003 -> Stair1355485003[label="stairs
+[0..*]"];
+MinimumEvacTimeProblemSolver1355485003 -> Door1355485003[label="flowNetwork
+[0..1]"];
+MinimumEvacTimeProblemSolver1355485003 -> Room1355485003[label="flowNetwork
+[0..1]"];
+MinimumEvacTimeProblemSolver1355485003 -> Room1355485003[label="sink
+[0..1]"];
+MinimumEvacTimeProblemSolver1355485003 -> Room1355485003[label="source
+[0..1]"];
+Room1355485003 -> Door1355485003[label="doors
+[0..*]"];
+    
+}
+@enduml

@@ -18,7 +18,4 @@ public interface EvacuationSolver {
         }
         return flowNetworkCopy;
     }
-
-    Room getFlowDirection(Door door);
-    int getFlow(Door door);
 }

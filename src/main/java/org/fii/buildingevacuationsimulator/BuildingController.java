@@ -182,6 +182,7 @@ public class BuildingController {
                         if (neighbour.getX() < x) {
                             newRoom1.addNeighbour(neighbour);
                             neighbour.addNeighbour(newRoom1);
+
                             if (neighbour.getWidth() + neighbour.getX() > x) {
                                 newRoom2.addNeighbour(neighbour);
                                 neighbour.addNeighbour(newRoom2);
@@ -294,6 +295,28 @@ public class BuildingController {
         };
     }
 
+    private int getInput(String headerText) {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Input");
+        dialog.setHeaderText(headerText);
+        Optional<String> result = dialog.showAndWait();
+        if (result.isEmpty() || result.get().isEmpty()) {
+            return -1;
+        }
+        int resultInt;
+        try {
+            resultInt = Integer.parseInt(result.get());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input");
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Invalid input");
+            alert.setContentText("Please input a number");
+            alert.show();
+            return -1;
+        }
+        return resultInt;
+    }
+
     public EventHandler<MouseEvent> doorClickCanvasHandle() {
         return event -> {
             var x = event.getX();
@@ -302,16 +325,14 @@ public class BuildingController {
                 if (room.isOnEdge(x, y)) {
                     for (var neighbour : room.getNeighbours()) {
                         if (neighbour.isOnEdge(x, y)) {
-                            TextInputDialog dialog = new TextInputDialog();
-                            dialog.setTitle("Input");
-                            dialog.setHeaderText("Input door capacity");
-                            Optional<String> result = dialog.showAndWait();
-                            if (result.isEmpty() || result.get().isEmpty()) {
+                            int result = getInput("Input door capacity");
+                            if (result < 0) {
                                 return;
                             }
+
                             double[] nearestEdge = room.getNearestEdge(x, y);
 
-                            Door door = new Door(room, neighbour, Integer.parseInt(result.get()), nearestEdge[0], nearestEdge[1]);
+                            Door door = new Door(room, neighbour, result, nearestEdge[0], nearestEdge[1]);
 
                             room.addDoor(door);
                             neighbour.addDoor(door);
@@ -323,17 +344,14 @@ public class BuildingController {
                     }
                     // add door to sink
                     System.out.println("Adding door to sink");
-                    TextInputDialog dialog = new TextInputDialog();
-                    dialog.setTitle("Input");
-                    dialog.setHeaderText("Input door capacity");
-                    Optional<String> result = dialog.showAndWait();
-                    if (result.isEmpty() || result.get().isEmpty()) {
+                    int result = getInput("Input door capacity");
+                    if (result < 0) {
                         return;
                     }
                     double[] nearestEdge = room.getNearestEdge(x, y);
-                    Door door = new Door(room, evacuationProblem.getTarget(), Integer.parseInt(result.get()), nearestEdge[0], nearestEdge[1]);
+                    Door door = new Door(room, evacuationProblem.getSink(), result, nearestEdge[0], nearestEdge[1]);
                     room.addDoor(door);
-                    evacuationProblem.getTarget().addDoor(door);
+                    evacuationProblem.getSink().addDoor(door);
                     evacuationProblem.addEdge(door);
 
                     draw();
@@ -378,14 +396,11 @@ public class BuildingController {
                 if (room.isInside(x, y)) {
                     for (Room roomBellow : floors.get(currentFloorIndex - 1).getRooms()) {
                         if (roomBellow.isInside(x, y)) {
-                            TextInputDialog dialog = new TextInputDialog();
-                            dialog.setTitle("Input");
-                            dialog.setHeaderText("Input stair capacity");
-                            Optional<String> result = dialog.showAndWait();
-                            if (result.isEmpty() || result.get().isEmpty()) {
+                            int result = getInput("Input stair capacity");
+                            if (result < 0) {
                                 return;
                             }
-                            Stair stair = new Stair(currentFloor, floors.get(currentFloorIndex - 1), room, roomBellow, Integer.parseInt(result.get()), x, y);
+                            Stair stair = new Stair(currentFloor, floors.get(currentFloorIndex - 1), room, roomBellow, result, x, y);
                             currentFloor.addStair(stair);
                             floors.get(currentFloorIndex - 1).addStair(stair);
 
@@ -414,14 +429,10 @@ public class BuildingController {
             var y = event.getY();
             for (var room : currentFloor.getRooms()) {
                 if (room.isInside(x, y)) {
-                    TextInputDialog dialog = new TextInputDialog();
-                    dialog.setTitle("Input");
-                    dialog.setHeaderText("Input source initial capacity");
-                    Optional<String> result = dialog.showAndWait();
-                    if (result.isEmpty() || result.get().isEmpty()) {
+                    int resultInt = getInput("Input source capacity");
+                    if (resultInt == -1) {
                         return;
                     }
-                    int resultInt = Integer.parseInt(result.get());
                     evacuationProblem.addEdgeToSource(room, resultInt);
                     room.setNrOfPeopleInside(resultInt);
                     System.out.println("Room selected as source");
@@ -553,7 +564,7 @@ public class BuildingController {
     // export as a JSON object using the json library
     public JsonObject toJson() {
         return Json.createObjectBuilder()
-                .add("sink", evacuationProblem.getTarget().toJson())
+                .add("sink", evacuationProblem.getSink().toJson())
                 .add("floorsNr", floors.size())
                 .add("currentFloor", floors.indexOf(currentFloor))
                 .add("rooms", Json.createArrayBuilder(
@@ -643,7 +654,7 @@ public class BuildingController {
                     .orElseThrow();
 
             if (((JsonObject) doorJson).getString("room2").equals(sink.getUuid())) {
-                Room newSink = buildingController.evacuationProblem.getTarget();
+                Room newSink = buildingController.evacuationProblem.getSink();
                 Door door = Door.fromJson((JsonObject) doorJson, room1, newSink);
                 room1.addDoor(door);
 
