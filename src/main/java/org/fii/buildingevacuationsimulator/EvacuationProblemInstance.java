@@ -1,5 +1,7 @@
 package org.fii.buildingevacuationsimulator;
 
+import javafx.stage.FileChooser;
+import javafx.stage.PopupWindow;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.SimpleWeightedGraph;
 import org.jgrapht.nio.Attribute;
@@ -65,32 +67,45 @@ public class EvacuationProblemInstance {
         flowNetwork.removeAllEdges(sources);
     }
 
-    public void exportGraphAsDot() throws IOException {
-        File imgFile = new File("src/main/resources/graph.dot");
-        imgFile.createNewFile();
-        // export the graph as a png image
-        DOTExporter<Room, Door> graphExporter = new DOTExporter<>(room -> {
-            if (room == sink) {
-                return "t";
-            } else if (room == source) {
-                return "s";
+    public String exportGraphAsDot() throws IOException {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save File");
+        fileChooser.setInitialDirectory(new File("./saves"));
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter(".dot", "*.dot")
+        );
+        File file = fileChooser.showSaveDialog(new PopupWindow() {});
+        if (file != null) {
+            boolean fileCreated = file.createNewFile();
+            if (!fileCreated) {
+                System.out.println("File already exists");
+                return null;
             }
-            return "v" + room.getFloorNumber() + "_" + flowNetwork.vertexSet().stream().toList().indexOf(room);
-        });
+            // export the graph as a png image
+            DOTExporter<Room, Door> graphExporter = new DOTExporter<>(room -> {
+                if (room == sink) {
+                    return "t";
+                } else if (room == source) {
+                    return "s";
+                }
+                return "v" + room.getFloorNumber() + "_" + flowNetwork.vertexSet().stream().toList().indexOf(room);
+            });
 
-        graphExporter.setEdgeAttributeProvider(door -> {
-            Map<String, Attribute> edgeAttributes = new HashMap<>();
-            edgeAttributes.put("label", new DefaultAttribute<>(door.getWeightAsString(), AttributeType.STRING));
-            edgeAttributes.put("color", new DefaultAttribute<>(door.getColor(), AttributeType.STRING));
-            return edgeAttributes;
-        });
-        graphExporter.exportGraph(flowNetwork, imgFile);
+            graphExporter.setEdgeAttributeProvider(door -> {
+                Map<String, Attribute> edgeAttributes = new HashMap<>();
+                edgeAttributes.put("label", new DefaultAttribute<>(door.getWeightAsString(), AttributeType.STRING));
+                edgeAttributes.put("color", new DefaultAttribute<>(door.getColor(), AttributeType.STRING));
+                return edgeAttributes;
+            });
+            graphExporter.exportGraph(flowNetwork, file);
+        }
+        return file.getPath();
     }
 
     public void showGraph() throws IOException {
         // call exportGraphAsDot() to generate the dot file and call graphviz command to render the graph as a png image
-        exportGraphAsDot();
-        ProcessBuilder pb = new ProcessBuilder("dot", "-Tpng", "src/main/resources/graph.dot", "-o", "src/main/resources/graph.png");
+        String filePath = exportGraphAsDot();
+        ProcessBuilder pb = new ProcessBuilder("dot", "-Tpng", filePath, "-o", filePath.replace(".dot", ".png"));
         pb.start();
     }
 
